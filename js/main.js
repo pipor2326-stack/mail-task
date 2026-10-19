@@ -138,3 +138,22 @@ function updateDebugLog() {
 
   debugDiv.textContent = JSON.stringify({ summary, actionLog }, null, 2);
 }
+
+// URL の末尾に ?debug=1 を付けたときだけ「送信テスト」ボタンを表示する
+if (new URLSearchParams(location.search).get("debug") === "1") {
+  const testButton = document.createElement("button");
+  testButton.id = "send-test-button";
+  testButton.textContent = "送信テスト";
+  testButton.addEventListener("click", () => {
+    sendToSheet({
+      participantId: "test",
+      type: "test",
+      payload: {
+        clientTime: new Date().toISOString(),
+        condition: condition,
+        userAgent: navigator.userAgent
+      }
+    });
+  });
+  document.body.appendChild(testButton);
+}

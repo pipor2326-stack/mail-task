@@ -121,3 +121,12 @@ button:disabled {
   color: #555;
   line-height: 1.7;
 }
+#send-test-button {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  margin: 0;
+  background: #333;
+  color: #fff;
+  z-index: 1000;
+}
