@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>メール振り分けタスク（デモ）</title>
+<style>
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    background: #f4f5f7;
+    margin: 0;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 18px;
+    color: #333;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+  }
+  th {
+    background: #eaeaea;
+    color: #555;
+  }
+  tr.archived {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+  tr.trashed {
+    opacity: 0.4;
+    background: #ffecec;
+    text-decoration: line-through;
+  }
+  button {
+    padding: 6px 12px;
+    margin-right: 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .archive-btn {
+    background: #d0e8ff;
+    color: #0056b3;
+  }
+  .archive-btn:hover {
+    background: #b3d9ff;
+  }
+  .trash-btn {
+    background: #ffd6d6;
+    color: #b30000;
+  }
+  .trash-btn:hover {
+    background: #ffb3b3;
+  }
+  button:disabled {
+    background: #eee;
+    color: #aaa;
+    cursor: not-allowed;
+  }
+  #debug-log {
+    white-space: pre-wrap;
+    background: #1e1e1e;
+    color: #9cdcfe;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 12px;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  #consent-screen {
+    max-width: 560px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 24px 28px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  #consent-screen h1 {
+    font-size: 18px;
+  }
+  #consent-screen p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+  }
+  #consent-screen label {
+    display: block;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  #consent-button {
+    padding: 8px 20px;
+    background: #0056b3;
+    color: #fff;
+    font-size: 14px;
+  }
+  #consent-button:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+  }
+  #complete-screen, #already-screen {
+    max-width: 560px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 32px 28px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  #complete-screen h1, #already-screen h1 {
+    font-size: 20px;
+    color: #333;
+  }
+  #complete-screen p, #already-screen p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<div id="already-screen" style="display: none;">
+  <h1>ご回答ありがとうございました</h1>
+  <p>あなたはすでにご回答いただいています。<br>ご協力ありがとうございました。</p>
+</div>
+
+<div id="consent-screen">
+  <h1>研究参加への同意</h1>
+  <p>
+    本実験は心理学の卒業研究の一環として行うものです。得られた回答は匿名で処理され、
+    個人が特定されることはありません。実験の途中でも、いつでも中断・退出していただいて構いません。
+    ご協力いただける場合は、下記のチェックボックスにチェックを入れたうえで「同意して始める」ボタンを押してください。
+  </p>
+  <label>
+    <input type="checkbox" id="consent-checkbox">
+    上記の内容を理解し、実験への参加に同意します
+  </label>
+  <button id="consent-button" disabled>同意して始める</button>
+</div>
+
+<div id="task-screen" style="display: none;">
+
+<h1>受信トレイ（デモ）</h1>
+
+<h2>タスクの指示</h2>
+<p>
+  送信者が「システム通知」「配送サービス」のような自動送信メールは、<strong>すべてゴミ箱に移動</strong>してください。<br>
+  それ以外の人からのメールは、<strong>すべてアーカイブ</strong>してください。
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>送信者</th>
+      <th>件名</th>
+      <th>日付</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody id="mail-list">
+    <!-- JSでダミーメールを描画 -->
+  </tbody>
+</table>
+
+<h2>デバッグ用ログ表示</h2>
+<div id="debug-log"></div>
+
+</div>
+
+<div id="complete-screen" style="display: none;">
+  <h1>ご協力ありがとうございました</h1>
+  <p>実験は以上で終了です。ご協力いただき誠にありがとうございました。</p>
+</div>
+
+<script>
+  // ダミーメールデータ（8件）
+  // correctAction: "archive"（アーカイブすべき） / "trash"（ゴミ箱にすべき） / "none"（どちらもすべきでない）
+  // ルール: 「システム通知」「配送サービス」等の自動送信メールはtrash、それ以外の人からのメールはarchive
+  const emails = [
+    { sender: "田中 太郎", subject: "来週の会議日程について", date: "2026-09-20", correctAction: "archive" },
+    { sender: "山田 花子", subject: "資料送付のお願い", date: "2026-09-21", correctAction: "archive" },
+    { sender: "システム通知", subject: "パスワード変更のお知らせ", date: "2026-09-21", correctAction: "trash" },
+    { sender: "佐藤 次郎", subject: "見積書のご確認", date: "2026-09-22", correctAction: "archive" },
+    { sender: "鈴木 一郎", subject: "Re: プロジェクト進捗共有", date: "2026-09-23", correctAction: "archive" },
+    { sender: "総務部", subject: "健康診断のご案内", date: "2026-09-24", correctAction: "archive" },
+    { sender: "高橋 美咲", subject: "打ち合わせ議事録の共有", date: "2026-09-25", correctAction: "archive" },
+    { sender: "配送サービス", subject: "お荷物のお届け完了のお知らせ", date: "2026-09-26", correctAction: "trash" }
+  ];
+
+  // 条件をランダムに割り当てる（50%ずつの確率でAまたはB）
+  const condition = Math.random() < 0.5 ? "A" : "B";
+  console.log("割り当てられた条件:", condition);
+
+  // ログ用データ
+  const actionLog = [];
+  let startTime = null; // 「同意して始める」を押した時刻に記録する
+  let endTime = null;
+  let processedCount = 0; // 処理済みメール数（archive/trashが実際に実行された数）
+
+  const tbody = document.getElementById("mail-list");
+
+  emails.forEach((mail, index) => {
+    const tr = document.createElement("tr");
+    tr.id = `mail-${index}`;
+    tr.innerHTML = `
+      <td>${mail.sender}</td>
+      <td>${mail.subject}</td>
+      <td>${mail.date}</td>
+      <td>
+        <button class="archive-btn" onclick="handleAction(${index}, 'archive')">アーカイブ</button>
+        <button class="trash-btn" onclick="handleAction(${index}, 'trash')">ゴミ箱</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateDebugLog(); // 初期状態も表示しておく
+
+  // 参加済みかどうかをlocalStorageで判定するためのキー
+  const PARTICIPATED_KEY = "mailSortExperiment_participated";
+
+  // 同意画面の制御
+  const alreadyScreen = document.getElementById("already-screen");
+  const consentScreen = document.getElementById("consent-screen");
+  const taskScreen = document.getElementById("task-screen");
+  const completeScreen = document.getElementById("complete-screen");
+  const consentCheckbox = document.getElementById("consent-checkbox");
+  const consentButton = document.getElementById("consent-button");
+
+  if (localStorage.getItem(PARTICIPATED_KEY) === "true") {
+    // すでに参加済みの場合は同意画面を隠し、専用の画面だけ表示する
+    consentScreen.style.display = "none";
+    alreadyScreen.style.display = "block";
+  } else {
+    consentCheckbox.addEventListener("change", () => {
+      consentButton.disabled = !consentCheckbox.checked;
+    });
+
+    consentButton.addEventListener("click", () => {
+      startTime = Date.now(); // 同意して始めた時刻をstartTimeとして記録
+      localStorage.setItem(PARTICIPATED_KEY, "true"); // 参加済みフラグを記録
+      consentScreen.style.display = "none";
+      taskScreen.style.display = "block";
+      updateDebugLog();
+    });
+  }
+
+  function handleAction(index, action) {
+    const row = document.getElementById(`mail-${index}`);
+    if (!row) return;
+
+    const mail = emails[index];
+    let dialogChoice = null; // 確認ダイアログで「はい」→true, 「いいえ」→false, 出なければnull
+
+    // 条件Aのときだけ確認ダイアログを出す
+    if (condition === "A") {
+      const actionLabel = action === "archive" ? "アーカイブ" : "ゴミ箱に移動";
+      const confirmed = window.confirm(`このメールを${actionLabel}しますか？`);
+      dialogChoice = confirmed;
+      if (!confirmed) {
+        console.log(`メール${index}の${actionLabel}をキャンセルしました`);
+        // キャンセルした場合もログに残す（isCorrectはnull扱い＝実行されていないため）
+        actionLog.push({
+          timestamp: Date.now(),
+          mailIndex: index,
+          subject: mail.subject,
+          chosenAction: action,
+          correctAction: mail.correctAction,
+          isCorrect: null,
+          condition: condition,
+          dialogChoice: dialogChoice
+        });
+        updateDebugLog();
+        return;
+      }
+    }
+
+    if (action === "trash") {
+      // ゴミ箱の場合は行自体を非表示にする
+      row.style.display = "none";
+    } else {
+      row.classList.add("archived");
+      row.querySelectorAll("button").forEach(btn => btn.disabled = true);
+    }
+
+    // ログを1件記録
+    actionLog.push({
+      timestamp: Date.now(),
+      mailIndex: index,
+      subject: mail.subject,
+      chosenAction: action,
+      correctAction: mail.correctAction,
+      isCorrect: action === mail.correctAction,
+      condition: condition,
+      dialogChoice: dialogChoice
+    });
+
+    processedCount++;
+
+    console.log(`メール${index}を${action === "archive" ? "アーカイブ" : "ゴミ箱に移動"}しました`);
+
+    // 全メールを処理し終えたらendTimeを記録し、完了画面に切り替える
+    if (processedCount === emails.length && endTime === null) {
+      endTime = Date.now();
+      const durationMs = endTime - startTime;
+      console.log(`完了時間: ${durationMs} ms`);
+      console.log("startTime:", startTime, "endTime:", endTime);
+
+      taskScreen.style.display = "none";
+      completeScreen.style.display = "block";
+    }
+
+    updateDebugLog();
+  }
+
+  // デバッグ用ログ表示を更新
+  function updateDebugLog() {
+    const debugDiv = document.getElementById("debug-log");
+    if (!debugDiv) return;
+
+    const summary = {
+      startTime: startTime,
+      endTime: endTime,
+      durationMs: endTime !== null ? endTime - startTime : null,
+      processedCount: processedCount,
+      totalMails: emails.length
+    };
+
+    debugDiv.textContent = JSON.stringify({ summary, actionLog }, null, 2);
+  }
+</script>
+
+</body>
+</html>
