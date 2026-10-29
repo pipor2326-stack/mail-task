@@ -61,6 +61,7 @@ function setupDevPanel() {
     <div>パターン: <span id="dev-pattern">-</span></div>
     <div>抽選: <span id="dev-draw">-</span></div>
     <div>いまの試行: <span id="dev-trial">-</span></div>
+    <div>送信待ち: <span id="dev-queue">0</span> 件</div>
     <button id="dev-clear-button">参加済みの記録を消す</button>
   `;
   document.body.appendChild(panel);
@@ -85,6 +86,12 @@ function updateDevState(participantId, patternText) {
   const patternSpan = document.getElementById("dev-pattern");
   if (idSpan) idSpan.textContent = participantId || "-";
   if (patternSpan) patternSpan.textContent = patternText || "-";
+}
+
+// 札の「送信待ち:」の件数を更新する(save.js から、送信待ちリストが変わるたびに呼ばれる)
+function updateDevQueue(count) {
+  const span = document.getElementById("dev-queue");
+  if (span) span.textContent = count;
 }
 
 // 札の「抽選:」に、確認画面を出す試行の抽選結果を表示する(ブロック開始時に task.js から呼ばれる)

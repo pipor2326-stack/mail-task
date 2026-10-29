@@ -13,6 +13,12 @@
   data-text="〇〇" の場所には、data/texts.js の文言が入る(ここに書いた文字は使われない)。
 -->
 
+<!-- データの送信に失敗したときに、画面の上に出す帯(js/save.js で表示する) -->
+<div id="send-error">
+  <span data-text="save.failed"></span>
+  <button id="send-retry-button" data-text="save.retry"></button>
+</div>
+
 <!-- PC チェックで止まったとき -->
 <section class="screen" id="screen-pccheck">
   <h1 data-text="pccheck.title"></h1>
@@ -135,13 +141,16 @@
   <h1 data-text="postquestions.title"></h1>
   <div data-text="postquestions.body"></div>
   <p class="placeholder">(仮)段階7で、ここに全体についての質問が入ります</p>
-  <button class="main-button next-button" data-text="postquestions.button"></button>
+  <button id="postquestions-button" class="main-button" data-text="postquestions.button"></button>
 </section>
 
-<!-- 終了画面 -->
+<!-- 終了画面(すべての送信が成功してから、end-content を表示する) -->
 <section class="screen" id="screen-end">
-  <h1 data-text="end.title"></h1>
-  <div data-text="end.body"></div>
+  <div class="server-status" id="end-status"></div>
+  <div id="end-content">
+    <h1 data-text="end.title"></h1>
+    <div data-text="end.body"></div>
+  </div>
 </section>
 
 <!-- 確認画面(仕分け画面の上に重ねて出す。条件によって見た目は変えない) -->
@@ -162,6 +171,7 @@
 <script src="data/rules.js"></script>
 <script src="data/emails.js"></script>
 <script src="js/dev.js"></script>
+<script src="js/logger.js"></script>
 <script src="js/save.js"></script>
 <script src="js/screens.js"></script>
 <script src="js/dialog.js"></script>

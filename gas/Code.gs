@@ -2,12 +2,13 @@
 // スプレッドシートの「拡張機能 → Apps Script」で開いたエディタに、この内容を貼り付けて使う
 // このファイルを変えたら、エディタに貼り直し、「デプロイを管理」→ 編集 →「新バージョン」でデプロイし直す
 
-// 1行目に書く見出し
-const HEADERS = ["受信日時", "participantId", "type", "payload"];
-
 // カウンターの数字を保存しておく場所の名前(スクリプト プロパティ)
 const ID_COUNTER_KEY = "ID_COUNTER";         // 参加者IDの番号(P001 なら 1)
 const ASSIGN_COUNTER_KEY = "ASSIGN_COUNTER"; // 割り付けを何人に配ったか
+
+// データを書き込むシートの名前(なければ自動で作る)
+const TRIALS_SHEET = "trials";
+const PARTICIPANTS_SHEET = "participants";
 
 // ブラウザから POST で送られてきたデータを受け取る
 function doPost(e) {
@@ -30,31 +31,25 @@ function doPost(e) {
       return jsonResponse({ ok: true, pattern: nextPattern() });
     }
 
-    // それ以外:データをシートに書き込む
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-
-    // シートが空なら、1行目に見出しを書く
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(HEADERS);
+    // 各フェーズの終わり:試行の行をまとめて trials シートに追加する
+    if (data.action === "trials") {
+      return jsonResponse({ ok: true, status: appendTrials(data.sendId, data.data) });
     }
 
-    // payload は JSON 文字列のまま保存する
-    const payload = typeof data.payload === "string" ? data.payload : JSON.stringify(data.payload);
+    // 参加者の行を participants シートに書く(なければ作り、あれば上書き)
+    if (data.action === "participant") {
+      return jsonResponse({ ok: true, status: upsertParticipant(data.data) });
+    }
 
-    sheet.appendRow([
-      new Date(),          // 受信日時（サーバー側の時刻）
-      data.participantId,
-      data.type,
-      payload
-    ]);
-
-    return jsonResponse({ ok: true });
+    return jsonResponse({ ok: false, error: "知らない action です: " + data.action });
   } catch (err) {
     return jsonResponse({ ok: false, error: String(err) });
   } finally {
     lock.releaseLock();
   }
 }
+
+// ===== カウンター =====
 
 // ID カウンターを1つ進め、"P001" のような参加者IDを返す
 function nextParticipantId() {
@@ -74,6 +69,89 @@ function incrementCounter(key) {
   const n = Number(props.getProperty(key) || 0) + 1;
   props.setProperty(key, String(n));
   return n;
+}
+
+// ===== シートへの書き込み =====
+
+// 試行の行をまとめて trials シートの末尾に追加する
+// 同じ sendId がすでに書き込まれていたら、何もしない(再送で同じ行が重複しないように)
+function appendTrials(sendId, rows) {
+  const sheet = getOrCreateSheet(TRIALS_SHEET);
+  if (rows.length === 0) return "empty";
+
+  const keys = ["sendId", "receivedAt"].concat(Object.keys(rows[0]));
+  const headers = ensureHeaders(sheet, keys);
+
+  if (findRowByValue(sheet, headers.indexOf("sendId") + 1, sendId)) {
+    return "duplicate";
+  }
+
+  const receivedAt = new Date();
+  const values = rows.map(row => headers.map(header => {
+    if (header === "sendId") return sendId;
+    if (header === "receivedAt") return receivedAt;
+    return toCell(row[header]);
+  }));
+  sheet.getRange(sheet.getLastRow() + 1, 1, values.length, headers.length).setValues(values);
+  return "written";
+}
+
+// 参加者の行を participants シートに書く
+// 同じ参加者IDの行があれば上書きする。ただし、届いた内容がすでに書かれているものより古ければ(updateSeq が小さければ)何もしない
+function upsertParticipant(row) {
+  const sheet = getOrCreateSheet(PARTICIPANTS_SHEET);
+  const headers = ensureHeaders(sheet, ["receivedAt"].concat(Object.keys(row)));
+
+  const values = headers.map(header => header === "receivedAt" ? new Date() : toCell(row[header]));
+  const rowNumber = findRowByValue(sheet, headers.indexOf("participantId") + 1, row.participantId);
+
+  if (rowNumber) {
+    const oldSeq = Number(sheet.getRange(rowNumber, headers.indexOf("updateSeq") + 1).getValue()) || 0;
+    if (oldSeq >= row.updateSeq) return "skipped";
+    sheet.getRange(rowNumber, 1, 1, headers.length).setValues([values]);
+    return "updated";
+  }
+  sheet.appendRow(values);
+  return "created";
+}
+
+// シートを名前で探す。なければ作る
+function getOrCreateSheet(name) {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  return spreadsheet.getSheetByName(name) || spreadsheet.insertSheet(name);
+}
+
+// 1行目の見出しを確かめ、足りない列名を右端に足す。見出しの一覧を返す
+// (あとで記録する項目を増やしても、このコードを直さずに済むように)
+function ensureHeaders(sheet, keys) {
+  let headers = [];
+  if (sheet.getLastRow() > 0) {
+    headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  }
+  const missing = keys.filter(key => headers.indexOf(key) === -1);
+  if (missing.length > 0) {
+    sheet.getRange(1, headers.length + 1, 1, missing.length).setValues([missing]);
+    headers = headers.concat(missing);
+  }
+  return headers;
+}
+
+// column 列目に value と同じ値が入っている行の番号を返す(なければ null)
+function findRowByValue(sheet, column, value) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return null;
+  const found = sheet.getRange(2, column, lastRow - 1, 1)
+    .createTextFinder(String(value))
+    .matchEntireCell(true)
+    .findNext();
+  return found ? found.getRow() : null;
+}
+
+// シートのマスに入れる形にする(null は空欄、配列やオブジェクトは JSON の文字にする)
+function toCell(value) {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "object") return JSON.stringify(value);
+  return value;
 }
 
 // ===== GAS のエディタから手で実行する関数 =====
