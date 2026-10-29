@@ -83,6 +83,70 @@ button {
   color: #c62828;
 }
 
+/* ===== 質問の画面 ===== */
+
+.question {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+/* 未回答のまま進もうとした質問 */
+.question.is-missing {
+  border-color: #c62828;
+  background: #fff5f5;
+}
+.question-text {
+  margin: 0 0 10px;
+  font-weight: bold;
+}
+.optional {
+  margin-left: 6px;
+  font-weight: normal;
+  color: #888;
+}
+.choice-list .choice {
+  display: block;
+  margin: 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* 目盛り:左右に両端の説明、あいだに数字を並べる */
+.scale {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.scale-label {
+  flex: 0 0 110px;
+  color: #555;
+  text-align: center;
+}
+.scale-points {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+}
+.scale-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.question textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px;
+}
+.question-error {
+  text-align: center;
+  color: #c62828 !important;
+  font-weight: bold;
+}
+
 /* ===== 仕分け画面 ===== */
 
 /* 仕分け画面だけ横に広くする(左にルール、右にメール) */

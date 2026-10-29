@@ -6,11 +6,18 @@
 //   &pattern=3           割り付けパターンを指定する(段階5で使う)
 //   &n=4                 1ブロックの試行数を減らす(段階3以降で使う)
 //   &rest=3              休憩の待ち時間(秒)を変える(config.js の REST_MIN_SECONDS は変えない)
+//
+// テストモード(URL の末尾に ?test=1 を付けたとき。SPEC.md 8章)
+//   参加者とまったく同じ動きにする(警告・PC チェック・参加済みチェック・ランダムな順番。札は出さない)
+//   ただし、データに isTest = true を付け、カウンターは進めない(ID は TEST-日時)
+//   使える指定は &pattern= だけ(指定がなければパターン1)
+//   ?dev=1 と ?test=1 を両方付けたときは、開発者モードになる
 
 const urlParams = new URLSearchParams(location.search);
 
 const DEV = {
   isDev: urlParams.get("dev") === "1",
+  isTest: urlParams.get("test") === "1" && urlParams.get("dev") !== "1",
   start: urlParams.get("start"),            // 指定がなければ null
   pattern: parsePattern(urlParams.get("pattern")),
   n: Number(urlParams.get("n")) || null,
@@ -39,13 +46,19 @@ function parseRestSeconds(value) {
   return seconds;
 }
 
-// 開発者モードでないときは、ほかの指定はすべて無視する
+// 開発者モードでないときは、ほかの指定はすべて無視する(テストモードでは &pattern= だけ使える)
 if (!DEV.isDev) {
   DEV.start = null;
-  DEV.pattern = null;
   DEV.n = null;
   DEV.rest = null;
+  if (!DEV.isTest) DEV.pattern = null;
 }
+
+// 参加済み・完了の記録を保存するキー
+// 開発者モードでは開発者専用、テストモードではテスト専用のキーに保存する(本物の参加済みの記録と分けるため)
+const STORAGE_KEY_SUFFIX = DEV.isDev ? "_dev" : DEV.isTest ? "_test" : "";
+const PARTICIPATED_STORAGE_KEY = PARTICIPATED_KEY + STORAGE_KEY_SUFFIX;
+const COMPLETED_STORAGE_KEY = COMPLETED_KEY + STORAGE_KEY_SUFFIX;
 
 // 画面の右下に「開発者モード」の札を出す
 // (今どの画面にいるかと、参加済みの記録を消すボタン)
@@ -67,8 +80,12 @@ function setupDevPanel() {
   document.body.appendChild(panel);
 
   document.getElementById("dev-clear-button").addEventListener("click", () => {
-    localStorage.removeItem(PARTICIPATED_KEY);
-    alert("参加済みの記録を消しました。");
+    // 本物・テストモード・開発者モードの記録をすべて消す
+    ["", "_test", "_dev"].forEach(suffix => {
+      localStorage.removeItem(PARTICIPATED_KEY + suffix);
+      localStorage.removeItem(COMPLETED_KEY + suffix);
+    });
+    alert("参加済みの記録(本物・テストモード・開発者モード)をすべて消しました。");
   });
 
   console.log("開発者モードの設定:", DEV);

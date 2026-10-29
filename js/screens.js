@@ -66,6 +66,82 @@ function getText(key) {
   return value;
 }
 
+// ===== 質問の画面(事前質問・主観評価・全体の質問) =====
+
+// 質問の一覧(data/questions.js)を、container の中に並べる
+//   group: 記録の列名の頭に付ける名前("pre" / "rating1" / "rating2" / "post")
+function renderQuestions(container, questions, group) {
+  const items = questions.map((question, i) => {
+    const name = group + "_" + question.id; // 記録の列名にもなる
+    let input = "";
+
+    if (question.type === "choice") {
+      input = `<div class="choice-list">` + question.options.map(option =>
+        `<label class="choice"><input type="radio" name="${name}" value="${option}"> ${option}</label>`
+      ).join("") + `</div>`;
+    } else if (question.type === "scale") {
+      const points = [];
+      for (let n = question.min; n <= question.max; n++) {
+        points.push(`<label class="scale-point"><input type="radio" name="${name}" value="${n}"><span>${n}</span></label>`);
+      }
+      input = `<div class="scale">
+        <span class="scale-label">${question.minLabel}</span>
+        <div class="scale-points">${points.join("")}</div>
+        <span class="scale-label">${question.maxLabel}</span>
+      </div>`;
+    } else if (question.type === "text") {
+      input = `<textarea name="${name}" rows="3"></textarea>`;
+    }
+
+    const optional = question.required === false ? `<span class="optional">${TEXTS.questions.optional}</span>` : "";
+    return `<div class="question" data-name="${name}">
+      <p class="question-text">${i + 1}. ${question.text}${optional}</p>
+      ${input}
+    </div>`;
+  });
+
+  container.innerHTML = items.join("") + `<p class="question-error"></p>`;
+
+  // 答えたら、その質問の「未回答」の印を消す
+  container.addEventListener("change", event => {
+    const block = event.target.closest(".question");
+    if (block) block.classList.remove("is-missing");
+  });
+}
+
+// 回答を集める。未回答の必須の質問があれば、印を付けて false を返す
+// すべて答えていれば、{ 列名: 回答 } を返す(scale は数、choice と text は文字)
+function collectAnswers(container, questions, group) {
+  const answers = {};
+  const missing = [];
+
+  questions.forEach(question => {
+    const name = group + "_" + question.id;
+    let value = null;
+    if (question.type === "text") {
+      value = container.querySelector(`textarea[name="${name}"]`).value.trim();
+      if (value === "") value = null;
+    } else {
+      const checked = container.querySelector(`input[name="${name}"]:checked`);
+      if (checked) value = question.type === "scale" ? Number(checked.value) : checked.value;
+    }
+
+    if (value === null && question.required !== false) missing.push(name);
+    answers[name] = value;
+  });
+
+  // 未回答の質問に印を付け、いちばん上の未回答の質問が見えるところまでスクロールする
+  container.querySelectorAll(".question").forEach(block => {
+    block.classList.toggle("is-missing", missing.includes(block.dataset.name));
+  });
+  container.querySelector(".question-error").textContent = missing.length > 0 ? TEXTS.questions.unanswered : "";
+  if (missing.length > 0) {
+    container.querySelector(".question.is-missing").scrollIntoView({ block: "center" });
+    return false;
+  }
+  return answers;
+}
+
 // index.html の data-text="〇〇" が付いた場所すべてに、texts.js の文言を入れる
 function applyTexts() {
   document.querySelectorAll("[data-text]").forEach(element => {

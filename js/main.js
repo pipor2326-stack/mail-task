@@ -211,7 +211,7 @@ consentButton.addEventListener("click", () => {
   // 通信中に2回押されたり、チェックを外されたりしないようにする
   consentButton.disabled = true;
   consentCheckbox.disabled = true;
-  localStorage.setItem(PARTICIPATED_KEY, "true"); // 参加済みの印は同意した時点で付ける
+  setStorage(PARTICIPATED_STORAGE_KEY, "true"); // 参加済みの印は同意した時点で付ける
   recordStart();
 
   // ID が決まったら、参加者の行を「未完了」として送ってから次へ
@@ -221,9 +221,10 @@ consentButton.addEventListener("click", () => {
     goNext();
   };
 
-  // 開発者モード:カウンターを進めない
-  if (DEV.isDev) {
-    record.participantId = "DEV-" + formatDateTime(new Date());
+  // 開発者モード・テストモード:カウンターを進めない
+  if (DEV.isDev || DEV.isTest) {
+    record.participantId = (DEV.isTest ? "TEST-" : "DEV-") + formatDateTime(new Date());
+    console.log("参加者ID:", record.participantId);
     afterId();
     return;
   }
@@ -255,9 +256,9 @@ function startAssign() {
     goNext();
   };
 
-  // 開発者モード:カウンターを進めず、&pattern= のパターンにする(指定がなければ 1)
-  if (DEV.isDev) {
-    console.log("開発者モードの割り付け:", describePattern(DEV.pattern || 1));
+  // 開発者モード・テストモード:カウンターを進めず、&pattern= のパターンにする(指定がなければ 1)
+  if (DEV.isDev || DEV.isTest) {
+    console.log("割り付け(カウンターは進めない):", describePattern(DEV.pattern || 1));
     afterPattern(DEV.pattern || 1);
     return;
   }
@@ -283,11 +284,36 @@ document.querySelectorAll(".next-button").forEach(button => {
   button.addEventListener("click", goNext);
 });
 
-// ===== 全体についての質問 =====
+// ===== 質問の画面(事前質問・主観評価・全体の質問) =====
 
-// 「回答を送信する」:完了として参加者の行を送り、終了画面へ
-document.getElementById("postquestions-button").addEventListener("click", () => {
+// 質問を並べ、ボタンを押したら回答を確かめる。すべて答えていれば record に書き、onDone を呼ぶ
+//   screen: 画面の名前(index.html の 〇〇-area と 〇〇-button の 〇〇)
+//   group:  記録の列名の頭に付ける名前
+function setupQuestionScreen(screen, questions, group, onDone) {
+  const area = document.getElementById(screen + "-area");
+  renderQuestions(area, questions, group);
+
+  document.getElementById(screen + "-button").addEventListener("click", () => {
+    const answers = collectAnswers(area, questions, group);
+    if (!answers) return; // 未回答があるので先へ進めない
+    Object.assign(record, answers);
+    onDone();
+  });
+}
+
+// 事前質問・主観評価:答えたら参加者の行を更新して次へ
+const sendAndNext = () => {
+  sendParticipant(makeParticipantRow());
+  goNext();
+};
+setupQuestionScreen("prequestions", QUESTIONS.pre, "pre", sendAndNext);
+setupQuestionScreen("rating1", QUESTIONS.rating, "rating1", sendAndNext);
+setupQuestionScreen("rating2", QUESTIONS.rating, "rating2", sendAndNext);
+
+// 全体についての質問:「回答を送信する」で、完了として参加者の行を送り、終了画面へ
+setupQuestionScreen("postquestions", QUESTIONS.post, "post", () => {
   recordEnd();
+  setStorage(COMPLETED_STORAGE_KEY, "true"); // 最後まで終えた印(再参加チェックで、完了した人の文言を出すため)
   sendParticipant(makeParticipantRow());
   if (DEV.isDev) checkAllCorrectCounts();
   goNext();
@@ -352,14 +378,60 @@ function startRestTimer() {
 
 document.getElementById("rest-button").addEventListener("click", goNext);
 
+// ===== localStorage の読み書き =====
+
+// localStorage が使えない設定のブラウザでも止まらないよう、失敗は Console に出すだけにする
+function getStorage(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.error("localStorage を読めませんでした:", error);
+    return null;
+  }
+}
+
+function setStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.error("localStorage に保存できませんでした:", error);
+  }
+}
+
+// ===== PC チェック =====
+
+// パソコンで参加しているか(画面幅が MIN_SCREEN_WIDTH 以上で、マウスやタッチパッドがある)
+function isPC() {
+  const wideEnough = window.innerWidth >= MIN_SCREEN_WIDTH;
+  // 「any-pointer: fine」= マウスやタッチパッドのように、細かく指せる道具が1つでもある
+  const hasMouse = window.matchMedia("(any-pointer: fine)").matches;
+  if (!wideEnough || !hasMouse) {
+    console.log("PC チェック:", { 画面幅: window.innerWidth, マウスなど: hasMouse });
+  }
+  return wideEnough && hasMouse;
+}
+
 // ===== 参加済みの画面 =====
 
-// 段階7で、完了した人と途中で終了した人とで文言を分ける。いまは完了の文言だけを出す
+// 完了した人と、途中で終了した人(完了の印がない人)とで、文言を分ける
 function showAlreadyScreen() {
-  document.getElementById("already-title").innerHTML = TEXTS.already.doneTitle;
-  document.getElementById("already-body").innerHTML = TEXTS.already.doneBody;
+  const completed = getStorage(COMPLETED_STORAGE_KEY) === "true";
+  document.getElementById("already-title").innerHTML = completed ? TEXTS.already.doneTitle : TEXTS.already.incompleteTitle;
+  document.getElementById("already-body").innerHTML = completed ? TEXTS.already.doneBody : TEXTS.already.incompleteBody;
   showScreen("already");
 }
+
+// ===== ページを離れるときの警告 =====
+
+// 同意してから終了画面までのあいだ、ページを閉じる・再読み込みする・別のページへ移ろうとしたら、
+// ブラウザの「このサイトを離れますか?」を出す(終了画面と、開発者モードでは出さない)
+window.addEventListener("beforeunload", event => {
+  if (DEV.isDev) return;
+  if (!record.startTime) return;        // まだ同意していない
+  if (currentScreen === "end") return;  // 終了画面
+  event.preventDefault();
+  event.returnValue = ""; // 古いブラウザでも警告を出すため
+});
 
 // ===== 実験の開始 =====
 
@@ -389,8 +461,11 @@ if (DEV.start) {
     console.error("&start= の画面名が正しくありません:", DEV.start, "使える名前:", ["pccheck", "already"].concat(SCREEN_ORDER));
     goTo("consent");
   }
-} else if (!DEV.isDev && localStorage.getItem(PARTICIPATED_KEY) === "true") {
-  // 参加済みなら先へ進めない(開発者モードでは無視する)
+} else if (!isPC()) {
+  // 1. PC チェック:パソコンでなければ先へ進めない
+  showScreen("pccheck");
+} else if (!DEV.isDev && getStorage(PARTICIPATED_STORAGE_KEY) === "true") {
+  // 2. 再参加チェック:参加済みなら先へ進めない(開発者モードでは無視する)
   showAlreadyScreen();
 } else {
   goTo("consent");

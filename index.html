@@ -48,8 +48,9 @@
 <section class="screen" id="screen-prequestions">
   <h1 data-text="prequestions.title"></h1>
   <div data-text="prequestions.body"></div>
-  <p class="placeholder">(仮)段階7で、ここに事前質問が入ります</p>
-  <button class="main-button next-button" data-text="prequestions.button"></button>
+  <!-- data/questions.js の質問が入る -->
+  <div class="question-area" id="prequestions-area"></div>
+  <button id="prequestions-button" class="main-button" data-text="prequestions.button"></button>
 </section>
 
 <!-- 課題の共通説明 -->
@@ -103,8 +104,8 @@
 <section class="screen" id="screen-rating1">
   <h1 data-text="rating1.title"></h1>
   <div data-text="rating1.body"></div>
-  <p class="placeholder">(仮)段階7で、ここに主観評価と疲労感の質問が入ります</p>
-  <button class="main-button next-button" data-text="rating1.button"></button>
+  <div class="question-area" id="rating1-area"></div>
+  <button id="rating1-button" class="main-button" data-text="rating1.button"></button>
 </section>
 
 <!-- 休憩 -->
@@ -132,15 +133,15 @@
 <section class="screen" id="screen-rating2">
   <h1 data-text="rating2.title"></h1>
   <div data-text="rating2.body"></div>
-  <p class="placeholder">(仮)段階7で、ここに主観評価と疲労感の質問が入ります</p>
-  <button class="main-button next-button" data-text="rating2.button"></button>
+  <div class="question-area" id="rating2-area"></div>
+  <button id="rating2-button" class="main-button" data-text="rating2.button"></button>
 </section>
 
 <!-- 全体についての質問 -->
 <section class="screen" id="screen-postquestions">
   <h1 data-text="postquestions.title"></h1>
   <div data-text="postquestions.body"></div>
-  <p class="placeholder">(仮)段階7で、ここに全体についての質問が入ります</p>
+  <div class="question-area" id="postquestions-area"></div>
   <button id="postquestions-button" class="main-button" data-text="postquestions.button"></button>
 </section>
 
@@ -170,6 +171,7 @@
 <script src="data/texts.js"></script>
 <script src="data/rules.js"></script>
 <script src="data/emails.js"></script>
+<script src="data/questions.js"></script>
 <script src="js/dev.js"></script>
 <script src="js/logger.js"></script>
 <script src="js/save.js"></script>

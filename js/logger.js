@@ -36,6 +36,7 @@ function getTabStats() {
 const record = {
   participantId: null,     // 参加者ID(P001 など。開発者モードでは DEV-日時、取得失敗なら R-日時-乱数)
   isDev: DEV.isDev,        // 開発者モードか(テストのデータを分析から除くため)
+  isTest: DEV.isTest,      // テストモードか(同上)
   completed: false,        // 最後まで終えたか
   lastScreen: null,        // 最後にいた画面(途中で閉じた人が、どこでやめたかが分かる)
   pattern: null,           // 割り付けパターン(1〜4)
@@ -79,7 +80,8 @@ const record = {
   block2DialogTrap: null,
   block2DialogNormal: null,
 
-  // 〔段階7〕事前質問・主観評価・全体の質問の回答は、ここに足す
+  // 事前質問・主観評価・全体の質問の回答は、答えたときに「pre_〇〇」「rating1_〇〇」などの名前で足される
+  // (項目は data/questions.js で決める)
 
   // 実験全体でタブを離れた回数と合計時間
   tabLeaveCount: 0,
@@ -172,7 +174,8 @@ function makeTrialRows(results, info) {
     blockNumber: info.blockNumber,
     condition: info.condition,
     set: info.set,
-    isDev: record.isDev
+    isDev: record.isDev,
+    isTest: record.isTest
   }, trial));
 }
 

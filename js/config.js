@@ -63,6 +63,10 @@ const SERVER_TIMEOUT_MS = 15000;
 // 参加済みかどうかをlocalStorageで判定するためのキー
 const PARTICIPATED_KEY = "mailSortExperiment_participated";
 
+// 最後まで終えたかどうかをlocalStorageで判定するためのキー
+// (参加済みの人に、「完了した人」と「途中で終了した人」とで別の文言を出すため)
+const COMPLETED_KEY = "mailSortExperiment_completed";
+
 // まだ送れていないデータ(送信待ちリスト)をlocalStorageに一時保存するためのキー
 const SEND_QUEUE_KEY = "mailSortExperiment_sendQueue";
 

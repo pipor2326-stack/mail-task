@@ -42,6 +42,12 @@ const TEXTS = {
     button: "次へ"
   },
 
+  // 質問の画面(事前質問・主観評価・全体の質問で共通)
+  questions: {
+    unanswered: "まだ答えていない質問があります。赤い枠の質問にお答えください。",
+    optional: "(任意)"
+  },
+
   // 課題の共通説明
   instructions: {
     title: "課題の説明",
