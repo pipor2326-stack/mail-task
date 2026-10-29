@@ -52,17 +52,15 @@
 </section>
 
 <!-- 練習(セットP) -->
-<section class="screen" id="screen-practice">
+<section class="screen task-screen" id="screen-practice">
   <h1 data-text="practice.title"></h1>
-  <p class="placeholder">(仮)段階3で、ここに仕分け画面(セットP)が入ります</p>
-  <button class="main-button next-button" data-text="practice.button"></button>
+  <div class="task-container"></div>
 </section>
 
 <!-- 事前の共通課題(セットC) -->
-<section class="screen" id="screen-common">
+<section class="screen task-screen" id="screen-common">
   <h1 data-text="common.title"></h1>
-  <p class="placeholder">(仮)段階3で、ここに仕分け画面(セットC)が入ります</p>
-  <button class="main-button next-button" data-text="common.button"></button>
+  <div class="task-container"></div>
 </section>
 
 <!-- 割り付け(サーバーと通信) -->
@@ -81,10 +79,9 @@
 </section>
 
 <!-- ブロック1 -->
-<section class="screen" id="screen-block1">
+<section class="screen task-screen" id="screen-block1">
   <h1 data-text="block1.title"></h1>
-  <p class="placeholder">(仮)段階3で、ここに仕分け画面(本番)が入ります</p>
-  <button class="main-button next-button" data-text="block1.button"></button>
+  <div class="task-container"></div>
 </section>
 
 <!-- ブロック1後の主観評価 -->
@@ -111,10 +108,9 @@
 </section>
 
 <!-- ブロック2 -->
-<section class="screen" id="screen-block2">
+<section class="screen task-screen" id="screen-block2">
   <h1 data-text="block2.title"></h1>
-  <p class="placeholder">(仮)段階3で、ここに仕分け画面(本番)が入ります</p>
-  <button class="main-button next-button" data-text="block2.button"></button>
+  <div class="task-container"></div>
 </section>
 
 <!-- ブロック2後の主観評価 -->
@@ -142,9 +138,12 @@
 <!-- 読み込む順番が大事(先に読んだファイルの中身を、後のファイルが使う) -->
 <script src="js/config.js"></script>
 <script src="data/texts.js"></script>
+<script src="data/rules.js"></script>
+<script src="data/emails.js"></script>
 <script src="js/dev.js"></script>
 <script src="js/save.js"></script>
 <script src="js/screens.js"></script>
+<script src="js/task.js"></script>
 <script src="js/main.js"></script>
 
 </body>

@@ -8,6 +8,28 @@ function goTo(name) {
   if (name === "rest") {
     startRestTimer();
   }
+
+  // 仕分け画面:画面を開いたら課題を始め、終わったら次の画面へ
+  // 〔仮〕段階5で、ブロック1・2のセットと条件を割り付けパターンから決める。いまはブロック1=A、ブロック2=B
+  if (name === "practice") startTask(EMAILS.P, false, true);
+  if (name === "common") startTask(EMAILS.C, false, false);
+  if (name === "block1") startTask(EMAILS.A, true, false);
+  if (name === "block2") startTask(EMAILS.B, true, false);
+}
+
+// いまの画面で仕分け課題を始める
+// shuffle:表示順をランダムにするか、showFeedback:正誤を表示するか
+function startTask(emails, shuffle, showFeedback) {
+  runTask({
+    container: document.querySelector("#screen-" + currentScreen + " .task-container"),
+    emails: emails,
+    shuffle: shuffle,
+    showFeedback: showFeedback,
+    onFinish: results => {
+      console.log("課題の結果:", results); // 段階6で、ここから記録・送信する
+      goNext();
+    }
+  });
 }
 
 // いまの画面の次の画面へ進む

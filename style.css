@@ -75,6 +75,98 @@ button {
   color: #0056b3 !important;
 }
 
+/* ===== 仕分け画面 ===== */
+
+/* 仕分け画面だけ横に広くする(左にルール、右にメール) */
+.screen.task-screen {
+  max-width: 960px;
+}
+.task {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.task-rules {
+  flex: 0 0 300px;
+  background: #f7f9fc;
+  border: 1px solid #dde3ec;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.task-rules h2 {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+.task-rules ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.task-main {
+  flex: 1;
+}
+
+/* メールの枠は高さを固定する(本文の長さでフォルダボタンの位置が動かないように) */
+.mail-card {
+  height: 180px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.mail-row {
+  margin-bottom: 6px;
+}
+.mail-label {
+  display: inline-block;
+  width: 4em;
+  color: #888;
+}
+.mail-subject {
+  font-weight: bold;
+}
+.mail-body {
+  margin-top: 12px;
+  line-height: 1.7;
+  color: #444;
+}
+
+/* 正誤表示の場所も高さを固定する(文字があってもなくてもボタンが動かないように) */
+.task-feedback {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+.task-feedback.is-correct {
+  color: #1a7f37;
+}
+.task-feedback.is-incorrect {
+  color: #c62828;
+}
+
+/* フォルダボタン:4つを同じ大きさで横に並べる */
+.folder-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.folder-button {
+  height: 56px;
+  margin: 0;
+  background: #e8eef7;
+  color: #1f3b63;
+  font-size: 16px;
+  border: 1px solid #c5d3e8;
+}
+.folder-button:hover {
+  background: #d5e2f5;
+}
+
 /* ===== 開発者モードの札 ===== */
 
 #dev-panel {
