@@ -7,6 +7,15 @@
 const LOW_RATE = 0.25;
 const HIGH_RATE = 1.0;
 
+// 割り付けパターン(SPEC.md 5章の手順7)。各パターンの [ブロック1, ブロック2]
+//   condition: "low" = 低頻度、"high" = 高頻度 / set: 使うメールのセット
+const PATTERNS = {
+  1: [{ condition: "low", set: "A" }, { condition: "high", set: "B" }],
+  2: [{ condition: "low", set: "B" }, { condition: "high", set: "A" }],
+  3: [{ condition: "high", set: "A" }, { condition: "low", set: "B" }],
+  4: [{ condition: "high", set: "B" }, { condition: "low", set: "A" }]
+};
+
 // ===== 課題 =====
 
 // フォルダ名(画面のボタンに、この順番で左から並ぶ)
@@ -31,6 +40,10 @@ const BLANK_MS = 300;
 const FEEDBACK_MS_CORRECT = 1500;
 const FEEDBACK_MS_WRONG = 3000;
 
+// 確認画面が出てから、何ミリ秒のあいだ「実行」「戻る」のクリックを受け付けないか
+// (フォルダボタンの2度押しが、確認画面への応答として記録されないように)
+const DIALOG_LOCK_MS = 300;
+
 // ===== 実験の流れ =====
 
 // 休憩画面で「次へ」が押せるようになるまでの秒数
@@ -41,6 +54,9 @@ const MIN_SCREEN_WIDTH = 900;
 
 // サーバーとの通信(ID・割り付け)を何回失敗したら、ブラウザ側で決めて先へ進むか
 const MAX_SERVER_TRIES = 3;
+
+// サーバーの返事を何ミリ秒まで待つか(これを過ぎたら失敗とみなす)
+const SERVER_TIMEOUT_MS = 15000;
 
 // ===== 保存 =====
 

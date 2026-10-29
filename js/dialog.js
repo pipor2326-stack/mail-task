@@ -78,9 +78,12 @@ const dialogBackButton = document.getElementById("confirm-back");
 let dialogOnExecute = null;
 let dialogOnBack = null;
 
+// 確認画面を開いた時刻(performance.now())。開いた直後のクリックを無視するために使う
+let dialogOpenedAt = 0;
+
 // 確認画面を開く
 //   folder:    選んだフォルダ名
-//   anchor:    確認画面を重ねる場所(フォルダボタンの並び)
+//   anchor:    確認画面を出す場所(フォルダボタンの下の空き場所 .dialog-slot)
 //   onExecute: 「実行」を押したときに呼ぶ関数
 //   onBack:    「戻る」を押したときに呼ぶ関数
 function openConfirmDialog(folder, anchor, onExecute, onBack) {
@@ -88,12 +91,16 @@ function openConfirmDialog(folder, anchor, onExecute, onBack) {
   dialogOnExecute = onExecute;
   dialogOnBack = onBack;
 
-  // フォルダボタンの真上に重ねて出す(メールとルールを隠さないように。SPEC.md 4章)
+  // 出す場所が画面の下にはみ出していたら、見えるところまで少しだけスクロールする
+  anchor.scrollIntoView({ block: "nearest" });
+
+  // フォルダボタンの下の空き場所に出す(メール・ルール・フォルダボタンを隠さない。SPEC.md 4章)
   const rect = anchor.getBoundingClientRect();
   dialogBox.style.top = rect.top + "px";
   dialogBox.style.left = rect.left + "px";
   dialogBox.style.width = rect.width + "px";
   dialogOverlay.style.display = "flex";
+  dialogOpenedAt = performance.now();
   // どちらのボタンも選ばれた状態(フォーカス)にしない
   if (document.activeElement) document.activeElement.blur();
 }
@@ -104,13 +111,21 @@ function closeConfirmDialog() {
   dialogOnBack = null;
 }
 
+// 開いてから DIALOG_LOCK_MS ミリ秒たっていなければ true(そのクリックは無視する)
+// フォルダボタンを素早く2回押したとき、2回目が「実行」「戻る」の応答として記録されないように
+function isDialogLocked() {
+  return performance.now() - dialogOpenedAt < DIALOG_LOCK_MS;
+}
+
 dialogExecuteButton.addEventListener("click", () => {
+  if (isDialogLocked()) return;
   const callback = dialogOnExecute;
   closeConfirmDialog();
   if (callback) callback();
 });
 
 dialogBackButton.addEventListener("click", () => {
+  if (isDialogLocked()) return;
   const callback = dialogOnBack;
   closeConfirmDialog();
   if (callback) callback();

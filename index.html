@@ -34,6 +34,8 @@
     <span data-text="consent.checkbox"></span>
   </label>
   <button id="consent-button" class="main-button" data-text="consent.button" disabled></button>
+  <!-- 参加者IDを受け取るときの「通信中」「もう一度試す」の表示場所 -->
+  <div class="server-status" id="consent-status"></div>
 </section>
 
 <!-- 事前質問 -->
@@ -57,6 +59,13 @@
   <div class="task-container"></div>
 </section>
 
+<!-- 共通課題の説明 -->
+<section class="screen" id="screen-commonintro">
+  <h1 data-text="commonintro.title"></h1>
+  <div data-text="commonintro.body"></div>
+  <button class="main-button next-button" data-text="commonintro.button"></button>
+</section>
+
 <!-- 事前の共通課題(セットC) -->
 <section class="screen task-screen" id="screen-common">
   <h1 data-text="common.title"></h1>
@@ -67,8 +76,8 @@
 <section class="screen" id="screen-assign">
   <h1 data-text="assign.title"></h1>
   <div data-text="assign.body"></div>
-  <p class="placeholder">(仮)段階5で、ここでサーバーから割り付けを受け取り、自動で次へ進みます</p>
-  <button class="main-button next-button" data-text="assign.button"></button>
+  <!-- 割り付けを受け取るときの「通信中」「もう一度試す」の表示場所。受け取れたら自動で次へ進む -->
+  <div class="server-status" id="assign-status"></div>
 </section>
 
 <!-- ブロック1の説明 -->

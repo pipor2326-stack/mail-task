@@ -75,6 +75,14 @@ button {
   color: #0056b3 !important;
 }
 
+/* サーバーとの通信の表示(通信中・失敗) */
+.server-status p {
+  text-align: center;
+}
+.server-status .server-error {
+  color: #c62828;
+}
+
 /* ===== 仕分け画面 ===== */
 
 /* 仕分け画面だけ横に広くする(左にルール、右にメール) */
@@ -167,6 +175,13 @@ button {
   background: #d5e2f5;
 }
 
+/* 確認画面を出す空き場所。確認画面の箱と同じ高さを、ふだんから空けておく
+   (フォルダボタンとのあいだを空け、「実行」「戻る」がフォルダボタンと重ならないように) */
+.dialog-slot {
+  height: 150px;
+  margin-top: 20px;
+}
+
 /* ===== 確認画面 ===== */
 
 /* 画面全体をごく薄く覆う(覆いがあるので、後ろのフォルダボタンは押せない)
@@ -178,10 +193,11 @@ button {
   z-index: 900;
   background: rgba(0, 0, 0, 0.08);
 }
-/* 箱はフォルダボタンの真上に重ねる(位置と幅は js/dialog.js で決める) */
+/* 箱はフォルダボタンの下の空き場所に出す(位置と幅は js/dialog.js で決める) */
 .dialog-box {
   position: absolute;
   box-sizing: border-box;
+  height: 150px;
   background: #fff;
   border: 1px solid #c5d3e8;
   border-radius: 8px;

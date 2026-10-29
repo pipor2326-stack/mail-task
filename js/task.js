@@ -38,6 +38,8 @@ function buildTaskArea(container) {
         <div class="folder-buttons">
           ${FOLDERS.map(folder => `<button class="folder-button" data-folder="${folder}">${folder}</button>`).join("")}
         </div>
+        <!-- 確認画面を出す場所(フォルダボタンの下。ふだんは空いている) -->
+        <div class="dialog-slot"></div>
       </div>
     </div>
   `;
@@ -103,7 +105,7 @@ function runTask(options) {
       trial.firstFolder = folder;
       if (draw.ids.has(mail.id)) {
         trial.dialogShown = true;
-        openConfirmDialog(folder, container.querySelector(".folder-buttons"),
+        openConfirmDialog(folder, container.querySelector(".dialog-slot"),
           () => { trial.dialogResponse = "実行"; decide(folder); },
           () => { trial.dialogResponse = "戻る"; locked = false; } // 選び直しを待つ
         );

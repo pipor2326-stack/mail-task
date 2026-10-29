@@ -12,10 +12,21 @@ const urlParams = new URLSearchParams(location.search);
 const DEV = {
   isDev: urlParams.get("dev") === "1",
   start: urlParams.get("start"),            // 指定がなければ null
-  pattern: Number(urlParams.get("pattern")) || null,
+  pattern: parsePattern(urlParams.get("pattern")),
   n: Number(urlParams.get("n")) || null,
   rest: parseRestSeconds(urlParams.get("rest"))
 };
+
+// &pattern= の値を 1〜4 の数にする。それ以外なら null(指定なし扱い)
+function parsePattern(value) {
+  if (value === null) return null;
+  const pattern = Number(value);
+  if (![1, 2, 3, 4].includes(pattern)) {
+    console.error("&pattern= の値が正しくありません(1〜4 にしてください):", value);
+    return null;
+  }
+  return pattern;
+}
 
 // &rest= の値を秒数にする。0以上の整数でなければ null(指定なし扱い)
 function parseRestSeconds(value) {
@@ -46,6 +57,8 @@ function setupDevPanel() {
   panel.innerHTML = `
     <div><strong>開発者モード</strong></div>
     <div>画面: <span id="dev-screen-name">-</span></div>
+    <div>ID: <span id="dev-participant">-</span></div>
+    <div>パターン: <span id="dev-pattern">-</span></div>
     <div>抽選: <span id="dev-draw">-</span></div>
     <div>いまの試行: <span id="dev-trial">-</span></div>
     <button id="dev-clear-button">参加済みの記録を消す</button>
@@ -64,6 +77,14 @@ function setupDevPanel() {
 function updateDevPanel(screenName) {
   const span = document.getElementById("dev-screen-name");
   if (span) span.textContent = screenName;
+}
+
+// 札の「ID:」「パターン:」を更新する(main.js から、ID や割り付けが決まったときに呼ばれる)
+function updateDevState(participantId, patternText) {
+  const idSpan = document.getElementById("dev-participant");
+  const patternSpan = document.getElementById("dev-pattern");
+  if (idSpan) idSpan.textContent = participantId || "-";
+  if (patternSpan) patternSpan.textContent = patternText || "-";
 }
 
 // 札の「抽選:」に、確認画面を出す試行の抽選結果を表示する(ブロック開始時に task.js から呼ばれる)
