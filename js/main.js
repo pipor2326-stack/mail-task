@@ -461,6 +461,9 @@ if (DEV.start) {
     console.error("&start= の画面名が正しくありません:", DEV.start, "使える名前:", ["pccheck", "already"].concat(SCREEN_ORDER));
     goTo("consent");
   }
+} else if (!OPEN && !DEV.isDev && !DEV.isTest) {
+  // 0. 受け付けを始める前:「現在準備中です」だけを出して先へ進めない
+  showScreen("closed");
 } else if (!isPC()) {
   // 1. PC チェック:パソコンでなければ先へ進めない
   showScreen("pccheck");

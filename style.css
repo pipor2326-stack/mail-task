@@ -66,7 +66,7 @@ button {
   margin: 16px 0;
   font-size: 14px;
 }
-#screen-pccheck, #screen-already, #screen-end {
+#screen-closed, #screen-pccheck, #screen-already, #screen-end {
   text-align: center;
 }
 .countdown {

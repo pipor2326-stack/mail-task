@@ -8,6 +8,11 @@
 
 const TEXTS = {
 
+  // 受け付けを始める前(config.js の OPEN が false のとき)
+  closed: {
+    title: "現在準備中です"
+  },
+
   // PC チェックで止まったとき
   pccheck: {
     title: "PC でご参加ください",
