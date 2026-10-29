@@ -437,7 +437,10 @@ window.addEventListener("beforeunload", event => {
 
 applyTexts();
 setupDevPanel();
-if (DEV.isDev) checkLowRateCounts(); // 開発者モード:本番セットの抽選数を点検する
+if (DEV.isDev) {
+  checkEmailSets();     // 開発者モード:メールのセットを点検する
+  checkLowRateCounts(); // 開発者モード:本番セットの抽選数を点検する
+}
 
 // 前回ページを閉じたときに送れていなかったデータが残っていれば、送る
 if (!isQueueEmpty()) {

@@ -33,7 +33,11 @@ function buildTaskArea(container) {
     <div class="task">
       <div class="task-rules">
         <h2>${RULES.title}</h2>
-        <ul>${RULES.items.map(item => `<li>${item}</li>`).join("")}</ul>
+        <dl class="rule-list">
+          ${RULES.items.map(item => `<dt>${item.folder}</dt><dd>${item.text}</dd>`).join("")}
+        </dl>
+        <h2>${RULES.companiesTitle}</h2>
+        <ul class="company-list">${RULES.companies.map(company => `<li>${company}</li>`).join("")}</ul>
       </div>
       <div class="task-main">
         <div class="mail-card">

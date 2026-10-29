@@ -171,7 +171,26 @@ button {
   font-size: 15px;
   margin: 0 0 8px;
 }
-.task-rules ul {
+/* 2つ目の見出し(選考中の企業)の上を空ける */
+.task-rules .rule-list + h2 {
+  margin-top: 14px;
+}
+/* ルール:フォルダ名を太字で出し、その下にルールの文 */
+.rule-list {
+  margin: 0;
+}
+.rule-list dt {
+  font-weight: bold;
+  color: #1f3b63;
+  margin-top: 8px;
+}
+.rule-list dt:first-child {
+  margin-top: 0;
+}
+.rule-list dd {
+  margin: 0 0 0 1em;
+}
+.company-list {
   margin: 0;
   padding-left: 20px;
 }

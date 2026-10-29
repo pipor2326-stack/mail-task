@@ -91,6 +91,95 @@ function setupDevPanel() {
   console.log("開発者モードの設定:", DEV);
 }
 
+// 【開発者モード】メールのセット(data/emails.js)を点検し、結果を Console に出す(SPEC.md 3章)
+//   赤字(console.error):通数・ひっかけ数・本番のフォルダごとの数が config.js と違う、
+//                        正解フォルダが FOLDERS にない、ID や件名がセットをまたいで重なっている、
+//                        isTrap と trapType が食い違っている、練習の showDialog が true/false でない
+//   黄色(console.warn):A と B で、ひっかけの種類ごとの数が違う
+function checkEmailSets() {
+  const summary = {};
+  const seenIds = {};
+  const seenSubjects = {};
+
+  Object.keys(SET_SIZES).forEach(set => {
+    const emails = EMAILS[set] || [];
+    const expected = SET_SIZES[set];
+    const traps = emails.filter(mail => mail.isTrap);
+
+    if (emails.length !== expected.total) {
+      console.error(`セット${set}:通数が ${emails.length} 通です(config.js では ${expected.total} 通)`);
+    }
+    if (traps.length !== expected.trap) {
+      console.error(`セット${set}:ひっかけが ${traps.length} 通です(config.js では ${expected.trap} 通)`);
+    }
+
+    // フォルダごとの数
+    const perFolder = {};
+    FOLDERS.forEach(folder => perFolder[folder] = 0);
+    emails.forEach(mail => {
+      if (!FOLDERS.includes(mail.correctFolder)) {
+        console.error(`セット${set}・${mail.id}:正解フォルダ「${mail.correctFolder}」が FOLDERS にありません`);
+      } else {
+        perFolder[mail.correctFolder]++;
+      }
+    });
+    if (set === "A" || set === "B") {
+      FOLDERS.forEach(folder => {
+        if (perFolder[folder] !== MAIN_PER_FOLDER) {
+          console.error(`セット${set}:「${folder}」が ${perFolder[folder]} 通です(config.js では ${MAIN_PER_FOLDER} 通)`);
+        }
+      });
+    }
+
+    emails.forEach(mail => {
+      // ID と件名は、セットをまたいで重ならないようにする
+      if (seenIds[mail.id]) console.error(`ID「${mail.id}」が重なっています(セット${seenIds[mail.id]} とセット${set})`);
+      seenIds[mail.id] = set;
+      if (seenSubjects[mail.subject]) console.error(`件名「${mail.subject}」が重なっています(${seenSubjects[mail.subject]} と ${mail.id})`);
+      seenSubjects[mail.subject] = mail.id;
+
+      // ひっかけなら trapType があり、通常なら trapType は空
+      if (mail.isTrap !== (mail.trapType !== "")) {
+        console.error(`${mail.id}:isTrap(${mail.isTrap})と trapType(「${mail.trapType}」)が食い違っています`);
+      }
+      if (set === "P" && typeof mail.showDialog !== "boolean") {
+        console.error(`${mail.id}:練習のメールに showDialog(true / false)がありません`);
+      }
+    });
+
+    // ひっかけの種類ごとの数
+    const perTrapType = {};
+    traps.forEach(mail => perTrapType[mail.trapType] = (perTrapType[mail.trapType] || 0) + 1);
+
+    summary[set] = Object.assign({ 通数: emails.length, ひっかけ: traps.length }, perFolder);
+    if (set === "P") summary[set]["確認画面を出す"] = emails.filter(mail => mail.showDialog === true).length;
+    summary[set].trapTypes = perTrapType;
+  });
+
+  // A と B で、ひっかけの種類ごとの数がそろっているか
+  const typesA = JSON.stringify(sortKeys(summary.A.trapTypes));
+  const typesB = JSON.stringify(sortKeys(summary.B.trapTypes));
+  if (typesA !== typesB) {
+    console.warn(`ひっかけの種類ごとの数が A と B で違います:A ${typesA}、B ${typesB}`);
+  }
+
+  // 結果を表にして見せる(trapTypes は表に入らないので、別に出す)
+  const table = {};
+  Object.keys(summary).forEach(set => {
+    table[set] = Object.assign({}, summary[set]);
+    table[set].trapTypes = JSON.stringify(summary[set].trapTypes);
+  });
+  console.log("メールのセットの点検:");
+  console.table(table);
+}
+
+// オブジェクトのキーを名前順に並べ直す(比べるため)
+function sortKeys(obj) {
+  const sorted = {};
+  Object.keys(obj).sort().forEach(key => sorted[key] = obj[key]);
+  return sorted;
+}
+
 // 札の「画面:」の表示を更新する(画面が切り替わるたびに screens.js から呼ばれる)
 function updateDevPanel(screenName) {
   const span = document.getElementById("dev-screen-name");
