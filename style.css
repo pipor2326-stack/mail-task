@@ -4,129 +4,94 @@ body {
   margin: 0;
   padding: 24px;
 }
-h1 {
-  font-size: 18px;
-  color: #333;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-th, td {
-  padding: 10px 14px;
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 14px;
-}
-th {
-  background: #eaeaea;
-  color: #555;
-}
-tr.archived {
-  opacity: 0.4;
-  text-decoration: line-through;
-}
-tr.trashed {
-  opacity: 0.4;
-  background: #ffecec;
-  text-decoration: line-through;
-}
-button {
-  padding: 6px 12px;
-  margin-right: 6px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-.archive-btn {
-  background: #d0e8ff;
-  color: #0056b3;
-}
-.archive-btn:hover {
-  background: #b3d9ff;
-}
-.trash-btn {
-  background: #ffd6d6;
-  color: #b30000;
-}
-.trash-btn:hover {
-  background: #ffb3b3;
-}
-button:disabled {
-  background: #eee;
-  color: #aaa;
-  cursor: not-allowed;
-}
-#debug-log {
-  white-space: pre-wrap;
-  background: #1e1e1e;
-  color: #9cdcfe;
-  font-family: monospace;
-  font-size: 12px;
-  padding: 12px;
-  border-radius: 4px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-#consent-screen {
-  max-width: 560px;
-  margin: 60px auto;
+
+/* ===== 画面(カード) ===== */
+
+/* 最初はすべて隠しておき、js/screens.js で1つだけ表示する */
+.screen {
+  display: none;
+  max-width: 720px;
+  margin: 40px auto;
   background: #fff;
   padding: 24px 28px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-#consent-screen h1 {
-  font-size: 18px;
+.screen h1 {
+  font-size: 20px;
+  color: #333;
 }
-#consent-screen p {
+.screen p {
   font-size: 14px;
   line-height: 1.7;
   color: #444;
 }
-#consent-screen label {
-  display: block;
-  margin: 16px 0;
-  font-size: 14px;
+
+/* まだ作っていない部分の目印(段階2の仮表示) */
+.placeholder {
+  border: 1px dashed #bbb;
+  background: #fafafa;
+  padding: 24px;
+  text-align: center;
+  color: #888 !important;
 }
-#consent-button {
-  padding: 8px 20px;
+
+/* ===== ボタン ===== */
+
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.main-button {
+  display: block;
+  margin: 24px auto 0;
+  padding: 10px 28px;
   background: #0056b3;
   color: #fff;
-  font-size: 14px;
+  font-size: 15px;
 }
-#consent-button:disabled {
+.main-button:disabled {
   background: #ccc;
   color: #888;
   cursor: not-allowed;
 }
-#complete-screen, #already-screen {
-  max-width: 560px;
-  margin: 60px auto;
-  background: #fff;
-  padding: 32px 28px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+/* ===== 各画面 ===== */
+
+.consent-label {
+  display: block;
+  margin: 16px 0;
+  font-size: 14px;
+}
+#screen-pccheck, #screen-already, #screen-end {
   text-align: center;
 }
-#complete-screen h1, #already-screen h1 {
-  font-size: 20px;
-  color: #333;
+.countdown {
+  text-align: center;
+  font-size: 18px !important;
+  color: #0056b3 !important;
 }
-#complete-screen p, #already-screen p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.7;
-}
-#send-test-button {
+
+/* ===== 開発者モードの札 ===== */
+
+#dev-panel {
   position: fixed;
   right: 16px;
   bottom: 16px;
-  margin: 0;
+  z-index: 1000;
   background: #333;
   color: #fff;
-  z-index: 1000;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  border-radius: 6px;
+  opacity: 0.9;
+}
+#dev-panel button {
+  margin-top: 6px;
+  background: #666;
+  color: #fff;
 }

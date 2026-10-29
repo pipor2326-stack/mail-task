@@ -2,67 +2,149 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>メール振り分けタスク（デモ）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>メール振り分け課題</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="already-screen" style="display: none;">
-  <h1>ご回答ありがとうございました</h1>
-  <p>あなたはすでにご回答いただいています。<br>ご協力ありがとうございました。</p>
-</div>
+<!--
+  1つの <section class="screen"> が1つの画面。最初はすべて隠しておき、js/screens.js の showScreen() で1つだけ表示する。
+  data-text="〇〇" の場所には、data/texts.js の文言が入る(ここに書いた文字は使われない)。
+-->
 
-<div id="consent-screen">
-  <h1>研究参加への同意</h1>
-  <p>
-    本実験は心理学の卒業研究の一環として行うものです。得られた回答は匿名で処理され、
-    個人が特定されることはありません。実験の途中でも、いつでも中断・退出していただいて構いません。
-    ご協力いただける場合は、下記のチェックボックスにチェックを入れたうえで「同意して始める」ボタンを押してください。
-  </p>
-  <label>
+<!-- PC チェックで止まったとき -->
+<section class="screen" id="screen-pccheck">
+  <h1 data-text="pccheck.title"></h1>
+  <div data-text="pccheck.body"></div>
+</section>
+
+<!-- 参加済みのとき(完了/途中終了で文言を入れ替える) -->
+<section class="screen" id="screen-already">
+  <h1 id="already-title"></h1>
+  <div id="already-body"></div>
+</section>
+
+<!-- 同意画面 -->
+<section class="screen" id="screen-consent">
+  <h1 data-text="consent.title"></h1>
+  <div data-text="consent.body"></div>
+  <label class="consent-label">
     <input type="checkbox" id="consent-checkbox">
-    上記の内容を理解し、実験への参加に同意します
+    <span data-text="consent.checkbox"></span>
   </label>
-  <button id="consent-button" disabled>同意して始める</button>
-</div>
+  <button id="consent-button" class="main-button" data-text="consent.button" disabled></button>
+</section>
 
-<div id="task-screen" style="display: none;">
+<!-- 事前質問 -->
+<section class="screen" id="screen-prequestions">
+  <h1 data-text="prequestions.title"></h1>
+  <div data-text="prequestions.body"></div>
+  <p class="placeholder">(仮)段階7で、ここに事前質問が入ります</p>
+  <button class="main-button next-button" data-text="prequestions.button"></button>
+</section>
 
-<h1>受信トレイ（デモ）</h1>
+<!-- 課題の共通説明 -->
+<section class="screen" id="screen-instructions">
+  <h1 data-text="instructions.title"></h1>
+  <div data-text="instructions.body"></div>
+  <button class="main-button next-button" data-text="instructions.button"></button>
+</section>
 
-<h2>タスクの指示</h2>
-<p>
-  送信者が「システム通知」「配送サービス」のような自動送信メールは、<strong>すべてゴミ箱に移動</strong>してください。<br>
-  それ以外の人からのメールは、<strong>すべてアーカイブ</strong>してください。
-</p>
+<!-- 練習(セットP) -->
+<section class="screen" id="screen-practice">
+  <h1 data-text="practice.title"></h1>
+  <p class="placeholder">(仮)段階3で、ここに仕分け画面(セットP)が入ります</p>
+  <button class="main-button next-button" data-text="practice.button"></button>
+</section>
 
-<table>
-  <thead>
-    <tr>
-      <th>送信者</th>
-      <th>件名</th>
-      <th>日付</th>
-      <th>操作</th>
-    </tr>
-  </thead>
-  <tbody id="mail-list">
-    <!-- JSでダミーメールを描画 -->
-  </tbody>
-</table>
+<!-- 事前の共通課題(セットC) -->
+<section class="screen" id="screen-common">
+  <h1 data-text="common.title"></h1>
+  <p class="placeholder">(仮)段階3で、ここに仕分け画面(セットC)が入ります</p>
+  <button class="main-button next-button" data-text="common.button"></button>
+</section>
 
-<h2>デバッグ用ログ表示</h2>
-<div id="debug-log"></div>
+<!-- 割り付け(サーバーと通信) -->
+<section class="screen" id="screen-assign">
+  <h1 data-text="assign.title"></h1>
+  <div data-text="assign.body"></div>
+  <p class="placeholder">(仮)段階5で、ここでサーバーから割り付けを受け取り、自動で次へ進みます</p>
+  <button class="main-button next-button" data-text="assign.button"></button>
+</section>
 
-</div>
+<!-- ブロック1の説明 -->
+<section class="screen" id="screen-block1intro">
+  <h1 data-text="block1intro.title"></h1>
+  <div data-text="block1intro.body"></div>
+  <button class="main-button next-button" data-text="block1intro.button"></button>
+</section>
 
-<div id="complete-screen" style="display: none;">
-  <h1>ご協力ありがとうございました</h1>
-  <p>実験は以上で終了です。ご協力いただき誠にありがとうございました。</p>
-</div>
+<!-- ブロック1 -->
+<section class="screen" id="screen-block1">
+  <h1 data-text="block1.title"></h1>
+  <p class="placeholder">(仮)段階3で、ここに仕分け画面(本番)が入ります</p>
+  <button class="main-button next-button" data-text="block1.button"></button>
+</section>
 
+<!-- ブロック1後の主観評価 -->
+<section class="screen" id="screen-rating1">
+  <h1 data-text="rating1.title"></h1>
+  <div data-text="rating1.body"></div>
+  <p class="placeholder">(仮)段階7で、ここに主観評価と疲労感の質問が入ります</p>
+  <button class="main-button next-button" data-text="rating1.button"></button>
+</section>
+
+<!-- 休憩 -->
+<section class="screen" id="screen-rest">
+  <h1 data-text="rest.title"></h1>
+  <div data-text="rest.body"></div>
+  <p id="rest-countdown" class="countdown"></p>
+  <button id="rest-button" class="main-button" data-text="rest.button" disabled></button>
+</section>
+
+<!-- ブロック2の説明 -->
+<section class="screen" id="screen-block2intro">
+  <h1 data-text="block2intro.title"></h1>
+  <div data-text="block2intro.body"></div>
+  <button class="main-button next-button" data-text="block2intro.button"></button>
+</section>
+
+<!-- ブロック2 -->
+<section class="screen" id="screen-block2">
+  <h1 data-text="block2.title"></h1>
+  <p class="placeholder">(仮)段階3で、ここに仕分け画面(本番)が入ります</p>
+  <button class="main-button next-button" data-text="block2.button"></button>
+</section>
+
+<!-- ブロック2後の主観評価 -->
+<section class="screen" id="screen-rating2">
+  <h1 data-text="rating2.title"></h1>
+  <div data-text="rating2.body"></div>
+  <p class="placeholder">(仮)段階7で、ここに主観評価と疲労感の質問が入ります</p>
+  <button class="main-button next-button" data-text="rating2.button"></button>
+</section>
+
+<!-- 全体についての質問 -->
+<section class="screen" id="screen-postquestions">
+  <h1 data-text="postquestions.title"></h1>
+  <div data-text="postquestions.body"></div>
+  <p class="placeholder">(仮)段階7で、ここに全体についての質問が入ります</p>
+  <button class="main-button next-button" data-text="postquestions.button"></button>
+</section>
+
+<!-- 終了画面 -->
+<section class="screen" id="screen-end">
+  <h1 data-text="end.title"></h1>
+  <div data-text="end.body"></div>
+</section>
+
+<!-- 読み込む順番が大事(先に読んだファイルの中身を、後のファイルが使う) -->
 <script src="js/config.js"></script>
-<script src="js/emails.js"></script>
+<script src="data/texts.js"></script>
+<script src="js/dev.js"></script>
 <script src="js/save.js"></script>
+<script src="js/screens.js"></script>
 <script src="js/main.js"></script>
 
 </body>
