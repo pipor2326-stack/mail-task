@@ -46,6 +46,8 @@ function setupDevPanel() {
   panel.innerHTML = `
     <div><strong>開発者モード</strong></div>
     <div>画面: <span id="dev-screen-name">-</span></div>
+    <div>抽選: <span id="dev-draw">-</span></div>
+    <div>いまの試行: <span id="dev-trial">-</span></div>
     <button id="dev-clear-button">参加済みの記録を消す</button>
   `;
   document.body.appendChild(panel);
@@ -62,4 +64,22 @@ function setupDevPanel() {
 function updateDevPanel(screenName) {
   const span = document.getElementById("dev-screen-name");
   if (span) span.textContent = screenName;
+}
+
+// 札の「抽選:」に、確認画面を出す試行の抽選結果を表示する(ブロック開始時に task.js から呼ばれる)
+//   例:「2/8通(ひっかけ1・通常1) A03, A06」
+function updateDevDraw(order, draw) {
+  const span = document.getElementById("dev-draw");
+  if (!span) return;
+  const ids = order.filter(mail => draw.ids.has(mail.id)).map(mail => mail.id); // 表示順に並べる
+  span.textContent = `${ids.length}/${order.length}通(ひっかけ${draw.trapCount}・通常${draw.normalCount}) ${ids.join(", ")}`;
+}
+
+// 札の「いまの試行:」に、いまのメールの正解と、確認画面を出すかを表示する(mail が null なら「-」)
+function updateDevTrial(mail, willShowDialog) {
+  const span = document.getElementById("dev-trial");
+  if (!span) return;
+  span.textContent = mail
+    ? `${mail.id} 正解=${mail.correctFolder}${mail.isTrap ? "(ひっかけ)" : ""} 確認画面=${willShowDialog ? "出す" : "出さない"}`
+    : "-";
 }

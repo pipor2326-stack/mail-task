@@ -59,6 +59,13 @@ const TEXTS = {
     incorrect: "不正解(正しくは「{正解}」)"
   },
 
+  // 確認画面。{フォルダ} の部分に、選んだフォルダ名が入る
+  dialog: {
+    message: "このメールを『{フォルダ}』に移動します。",
+    execute: "実行",
+    back: "戻る"
+  },
+
   // 練習(セットP)
   practice: {
     title: "練習"

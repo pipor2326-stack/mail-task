@@ -167,6 +167,50 @@ button {
   background: #d5e2f5;
 }
 
+/* ===== 確認画面 ===== */
+
+/* 画面全体をごく薄く覆う(覆いがあるので、後ろのフォルダボタンは押せない)
+   メールとルールが読めるよう、暗くしすぎない(SPEC.md 4章) */
+.dialog-overlay {
+  display: none; /* 開くときに js/dialog.js で flex にする */
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(0, 0, 0, 0.08);
+}
+/* 箱はフォルダボタンの真上に重ねる(位置と幅は js/dialog.js で決める) */
+.dialog-box {
+  position: absolute;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #c5d3e8;
+  border-radius: 8px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+.dialog-box p {
+  font-size: 16px;
+  margin: 0 0 20px;
+}
+/* 2つのボタンは同じ大きさ・同じ色にする(どちらかを目立たせない) */
+.dialog-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.dialog-button {
+  height: 44px;
+  margin: 0;
+  font-size: 15px;
+  background: #e8eef7;
+  color: #1f3b63;
+  border: 1px solid #c5d3e8;
+}
+.dialog-button:hover {
+  background: #d5e2f5;
+}
+
 /* ===== 開発者モードの札 ===== */
 
 #dev-panel {

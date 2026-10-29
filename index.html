@@ -135,6 +135,18 @@
   <div data-text="end.body"></div>
 </section>
 
+<!-- 確認画面(仕分け画面の上に重ねて出す。条件によって見た目は変えない) -->
+<div id="confirm-dialog" class="dialog-overlay">
+  <div class="dialog-box">
+    <p id="confirm-message"></p>
+    <div class="dialog-buttons">
+      <!-- 「実行」が左、「戻る」が右で固定。tabindex="-1" で Tab キーでも選べないようにする -->
+      <button id="confirm-execute" class="dialog-button" tabindex="-1" data-text="dialog.execute"></button>
+      <button id="confirm-back" class="dialog-button" tabindex="-1" data-text="dialog.back"></button>
+    </div>
+  </div>
+</div>
+
 <!-- 読み込む順番が大事(先に読んだファイルの中身を、後のファイルが使う) -->
 <script src="js/config.js"></script>
 <script src="data/texts.js"></script>
@@ -143,6 +155,7 @@
 <script src="js/dev.js"></script>
 <script src="js/save.js"></script>
 <script src="js/screens.js"></script>
+<script src="js/dialog.js"></script>
 <script src="js/task.js"></script>
 <script src="js/main.js"></script>
 

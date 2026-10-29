@@ -46,7 +46,15 @@ const EMAILS = {
     { id: "A03", sender: "総務課", subject: "防災訓練の実施について", body: "10月15日に全館で防災訓練を実施します。",
       correctFolder: "総務", isTrap: false, trapType: "", note: "社内行事" },
     { id: "A04", sender: "松本 さくら", subject: "おすすめの本", body: "この前話していた本、読み終わったのでお貸しします。",
-      correctFolder: "その他", isTrap: false, trapType: "", note: "どれにも当てはまらない" }
+      correctFolder: "その他", isTrap: false, trapType: "", note: "どれにも当てはまらない" },
+    { id: "A05", sender: "経理部 井上", subject: "領収書の提出期限", body: "今月分の領収書は25日までに提出してください。",
+      correctFolder: "経理", isTrap: false, trapType: "", note: "経費" },
+    { id: "A06", sender: "株式会社つばさ 林", subject: "備品カタログ送付のご案内", body: "弊社の新しい備品カタログをお送りします。ぜひご検討ください。",
+      correctFolder: "営業", isTrap: true, trapType: "〔仮〕備品という語があるが取引先からの営業", note: "取引先からの売り込みなので営業" },
+    { id: "A07", sender: "総務課 佐々木", subject: "社内運動会の参加募集", body: "11月の社内運動会の参加者を募集しています。",
+      correctFolder: "総務", isTrap: false, trapType: "", note: "社内行事" },
+    { id: "A08", sender: "池田 亮", subject: "飲み会の会費について", body: "金曜日の飲み会、会費は3000円です。当日集めます。",
+      correctFolder: "その他", isTrap: true, trapType: "〔仮〕会費という語があるが私的な連絡", note: "業務ではないのでその他" }
   ],
 
   // 本番
@@ -58,6 +66,14 @@ const EMAILS = {
     { id: "B03", sender: "庶務担当 山口", subject: "駐輪場の利用ルール変更", body: "来月から、駐輪場の利用には登録が必要になります。",
       correctFolder: "総務", isTrap: false, trapType: "", note: "施設" },
     { id: "B04", sender: "森 大輔", subject: "週末の写真", body: "週末に撮った写真を共有します。",
-      correctFolder: "その他", isTrap: false, trapType: "", note: "どれにも当てはまらない" }
+      correctFolder: "その他", isTrap: false, trapType: "", note: "どれにも当てはまらない" },
+    { id: "B05", sender: "経理課 岡田", subject: "経費精算システムの操作方法", body: "経費精算システムの使い方をまとめた資料をお送りします。",
+      correctFolder: "経理", isTrap: false, trapType: "", note: "経費" },
+    { id: "B06", sender: "株式会社はるか 石川", subject: "施設見学のお申し込み", body: "御社の新製品について、ショールームを見学させていただけますでしょうか。",
+      correctFolder: "営業", isTrap: true, trapType: "〔仮〕施設という語があるが顧客からの依頼", note: "顧客からの依頼なので営業" },
+    { id: "B07", sender: "総務部 前田", subject: "名刺の発注について", body: "名刺の追加発注を受け付けています。必要な方はご連絡ください。",
+      correctFolder: "総務", isTrap: false, trapType: "", note: "備品" },
+    { id: "B08", sender: "藤田 真理", subject: "立て替えたお金の件", body: "この前のタクシー代、半分の800円をまた今度ください。",
+      correctFolder: "その他", isTrap: true, trapType: "〔仮〕お金の話だが私的な連絡", note: "業務ではないのでその他" }
   ]
 };

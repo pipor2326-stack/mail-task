@@ -10,21 +10,23 @@ function goTo(name) {
   }
 
   // 仕分け画面:画面を開いたら課題を始め、終わったら次の画面へ
-  // 〔仮〕段階5で、ブロック1・2のセットと条件を割り付けパターンから決める。いまはブロック1=A、ブロック2=B
-  if (name === "practice") startTask(EMAILS.P, false, true);
-  if (name === "common") startTask(EMAILS.C, false, false);
-  if (name === "block1") startTask(EMAILS.A, true, false);
-  if (name === "block2") startTask(EMAILS.B, true, false);
+  // 〔仮〕段階5で、ブロック1・2のセットと条件を割り付けパターンから決める。
+  //       いまはパターン1(ブロック1=低頻度A、ブロック2=高頻度B)に固定
+  if (name === "practice") startTask(EMAILS.P, false, true, "practice");
+  if (name === "common") startTask(EMAILS.C, false, false, "none");
+  if (name === "block1") startTask(EMAILS.A, true, false, "low");
+  if (name === "block2") startTask(EMAILS.B, true, false, "high");
 }
 
 // いまの画面で仕分け課題を始める
-// shuffle:表示順をランダムにするか、showFeedback:正誤を表示するか
-function startTask(emails, shuffle, showFeedback) {
+// shuffle:表示順をランダムにするか、showFeedback:正誤を表示するか、dialogMode:確認画面の出し方
+function startTask(emails, shuffle, showFeedback, dialogMode) {
   runTask({
     container: document.querySelector("#screen-" + currentScreen + " .task-container"),
     emails: emails,
     shuffle: shuffle,
     showFeedback: showFeedback,
+    dialogMode: dialogMode,
     onFinish: results => {
       console.log("課題の結果:", results); // 段階6で、ここから記録・送信する
       goNext();
@@ -107,6 +109,7 @@ function showAlreadyScreen() {
 
 applyTexts();
 setupDevPanel();
+if (DEV.isDev) checkLowRateCounts(); // 開発者モード:本番セットの抽選数を点検する
 
 if (DEV.start) {
   // 開発者モードで &start= が指定されたら、その画面から始める
