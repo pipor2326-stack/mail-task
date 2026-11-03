@@ -183,7 +183,7 @@ const EMAILS = {
     { id: "B15", sender: "大学 教務課", subject: "授業の追加登録の申し込みについて",
       body: "追加で履修したい授業がある人は、申込書を提出してください。",
       correctFolder: "手続き", isTrap: true, trapType: "keyword_class", note: "" },
-    { id: "B16", sender: "軽音楽サークル Groove", subject: "ライブのリハーサル日程",
+    { id: "B16", sender: "軽音楽サークル ハミング", subject: "ライブのリハーサル日程",
       body: "学園祭ライブのリハーサルは、木曜日の18時からです。",
       correctFolder: "その他", isTrap: false, trapType: "", note: "" },
     { id: "B17", sender: "ベーカリー小麦堂", subject: "新商品のお知らせ",
