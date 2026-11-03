@@ -37,6 +37,7 @@ const record = {
   participantId: null,     // 参加者ID(P001 など。開発者モードでは DEV-日時、取得失敗なら R-日時-乱数)
   isDev: DEV.isDev,        // 開発者モードか(テストのデータを分析から除くため)
   isTest: DEV.isTest,      // テストモードか(同上)
+  studyPhase: STUDY_PHASE, // 予備実験("pilot")か本番("main")か(config.js で設定)
   completed: false,        // 最後まで終えたか
   lastScreen: null,        // 最後にいた画面(途中で閉じた人が、どこでやめたかが分かる)
   pattern: null,           // 割り付けパターン(1〜4)
@@ -175,7 +176,8 @@ function makeTrialRows(results, info) {
     condition: info.condition,
     set: info.set,
     isDev: record.isDev,
-    isTest: record.isTest
+    isTest: record.isTest,
+    studyPhase: record.studyPhase
   }, trial));
 }
 

@@ -6,6 +6,11 @@
 //   true  … 参加者が参加できる(本番を始めるときに true にして push する)
 const OPEN = false;
 
+// いまが予備実験か本番か(trials と participants の全行に、studyPhase という列で記録する)
+//   "pilot" … 予備実験
+//   "main"  … 本番(本番を始めるときに "main" にして push する)
+const STUDY_PHASE = "pilot";
+
 // ===== 条件 =====
 
 // 確認画面を出す割合(低頻度条件・高頻度条件)。0.25 = 25%
@@ -20,6 +25,15 @@ const PATTERNS = {
   3: [{ condition: "high", set: "A" }, { condition: "low", set: "B" }],
   4: [{ condition: "high", set: "B" }, { condition: "low", set: "A" }]
 };
+
+// 低頻度条件で、ひっかけを抽選するときのグループ(SPEC.md 4章)
+// グループごとに「ひっかけの数 × LOW_RATE」通を選ぶ(A・B は各グループ4通なので、1通ずつ)
+//   name:      グループの名前(開発者モードの表示用)
+//   trapTypes: このグループに入れるひっかけの種類(data/emails.js の trapType)
+const TRAP_GROUPS = [
+  { name: "件名の言葉", trapTypes: ["keyword_class", "keyword_procedure"] },
+  { name: "差出人", trapTypes: ["sender_university", "sender_similar"] }
+];
 
 // ===== 課題 =====
 

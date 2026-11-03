@@ -205,7 +205,9 @@ function updateDevQueue(count) {
 function updateDevDraw(order, draw) {
   const span = document.getElementById("dev-draw");
   if (!span) return;
-  const ids = order.filter(mail => draw.ids.has(mail.id)).map(mail => mail.id); // 表示順に並べる
+  // 表示順に並べる。ひっかけには種類を付ける(例:A19[sender_similar])
+  const ids = order.filter(mail => draw.ids.has(mail.id))
+    .map(mail => mail.isTrap ? `${mail.id}[${mail.trapType}]` : mail.id);
   span.textContent = `${ids.length}/${order.length}通(ひっかけ${draw.trapCount}・通常${draw.normalCount}) ${ids.join(", ")}`;
 }
 

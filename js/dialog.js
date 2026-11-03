@@ -25,43 +25,69 @@ function drawDialogTrials(order, mode) {
 
   const rate = mode === "low" ? LOW_RATE : HIGH_RATE;
 
-  // ひっかけと通常に分け、それぞれから「ちょうどの数」(四捨五入)をくじ引きで選ぶ
+  // ひっかけは TRAP_GROUPS(config.js)のグループに分け、グループごとに「ちょうどの数」(四捨五入)をくじ引きで選ぶ
+  // 通常のメールも、同じように「ちょうどの数」を選ぶ
+  // shuffleArray は js/task.js にある(並べ替えた先頭から必要な数だけ取る=くじ引き)
   const traps = order.filter(mail => mail.isTrap);
   const normals = order.filter(mail => !mail.isTrap);
-  const trapCount = Math.round(traps.length * rate);
+
+  let chosenTraps = [];
+  splitTrapsByGroup(traps).forEach(members => {
+    chosenTraps = chosenTraps.concat(shuffleArray(members).slice(0, Math.round(members.length * rate)));
+  });
   const normalCount = Math.round(normals.length * rate);
+  const chosen = chosenTraps.concat(shuffleArray(normals).slice(0, normalCount));
 
-  // shuffleArray は js/task.js にある(並べ替えた先頭から必要な数だけ取る=くじ引き)
-  const chosen = shuffleArray(traps).slice(0, trapCount)
-    .concat(shuffleArray(normals).slice(0, normalCount));
-
-  return { ids: new Set(chosen.map(mail => mail.id)), trapCount: trapCount, normalCount: normalCount };
+  return { ids: new Set(chosen.map(mail => mail.id)), trapCount: chosenTraps.length, normalCount: normalCount };
 }
 
-// 【開発者モード】本番セット A・B の低頻度の抽選数を点検し、問題があれば Console に黄色の注意を出す
-//   - 「ひっかけの数 × LOW_RATE」「通常の数 × LOW_RATE」が整数にならない(四捨五入で割合がずれる)
-//   - A と B で抽選される数が違う
-function checkLowRateCounts() {
-  const counts = {};
-  ["A", "B"].forEach(set => {
-    const trapTotal = EMAILS[set].filter(mail => mail.isTrap).length;
-    const normalTotal = EMAILS[set].length - trapTotal;
-    const trapExact = trapTotal * LOW_RATE;
-    const normalExact = normalTotal * LOW_RATE;
+// ひっかけを TRAP_GROUPS のグループごとに分ける(グループの順に、メールの一覧の一覧を返す)
+// どのグループにも入っていない trapType のひっかけは、最後に1つのグループとしてまとめる(設定漏れ。点検で赤字になる)
+function splitTrapsByGroup(traps) {
+  const groups = TRAP_GROUPS.map(group => traps.filter(mail => group.trapTypes.includes(mail.trapType)));
+  const others = traps.filter(mail => !TRAP_GROUPS.some(group => group.trapTypes.includes(mail.trapType)));
+  if (others.length > 0) groups.push(others);
+  return groups;
+}
 
-    // 小数の計算の誤差(0.30000000000000004 など)を無視するため、ごく小さい差は整数とみなす
-    const isInteger = value => Math.abs(value - Math.round(value)) < 1e-9;
-    if (!isInteger(trapExact)) {
-      console.warn(`セット${set}:ひっかけ${trapTotal}通 × ${LOW_RATE} = ${trapExact} が整数になりません(四捨五入で ${Math.round(trapExact)} 通を抽選します)`);
-    }
+// 【開発者モード】本番セット A・B の低頻度の抽選数を点検し、問題があれば Console に知らせる
+//   赤字:ひっかけの trapType が、TRAP_GROUPS のどのグループにも入っていない
+//   黄色:「グループのひっかけの数 × LOW_RATE」「通常の数 × LOW_RATE」が整数にならない(四捨五入で割合がずれる)
+//         A と B で抽選される数が違う
+function checkLowRateCounts() {
+  // 小数の計算の誤差(0.30000000000000004 など)を無視するため、ごく小さい差は整数とみなす
+  const isInteger = value => Math.abs(value - Math.round(value)) < 1e-9;
+  const counts = {};
+
+  ["A", "B"].forEach(set => {
+    const traps = EMAILS[set].filter(mail => mail.isTrap);
+    const normalTotal = EMAILS[set].length - traps.length;
+    counts[set] = {};
+
+    traps.forEach(mail => {
+      if (!TRAP_GROUPS.some(group => group.trapTypes.includes(mail.trapType))) {
+        console.error(`${mail.id}:trapType「${mail.trapType}」が、config.js の TRAP_GROUPS のどのグループにも入っていません`);
+      }
+    });
+
+    TRAP_GROUPS.forEach(group => {
+      const total = traps.filter(mail => group.trapTypes.includes(mail.trapType)).length;
+      const exact = total * LOW_RATE;
+      if (!isInteger(exact)) {
+        console.warn(`セット${set}:ひっかけ「${group.name}」${total}通 × ${LOW_RATE} = ${exact} が整数になりません(四捨五入で ${Math.round(exact)} 通を抽選します)`);
+      }
+      counts[set][group.name] = Math.round(exact);
+    });
+
+    const normalExact = normalTotal * LOW_RATE;
     if (!isInteger(normalExact)) {
       console.warn(`セット${set}:通常${normalTotal}通 × ${LOW_RATE} = ${normalExact} が整数になりません(四捨五入で ${Math.round(normalExact)} 通を抽選します)`);
     }
-    counts[set] = { trap: Math.round(trapExact), normal: Math.round(normalExact) };
+    counts[set].通常 = Math.round(normalExact);
   });
 
-  if (counts.A.trap !== counts.B.trap || counts.A.normal !== counts.B.normal) {
-    console.warn(`低頻度で抽選される数が A と B で違います:A はひっかけ${counts.A.trap}・通常${counts.A.normal}、B はひっかけ${counts.B.trap}・通常${counts.B.normal}`);
+  if (JSON.stringify(counts.A) !== JSON.stringify(counts.B)) {
+    console.warn("低頻度で抽選される数が A と B で違います:", counts);
   }
   console.log("低頻度の抽選数:", counts);
 }

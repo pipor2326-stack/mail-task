@@ -442,6 +442,9 @@ window.addEventListener("beforeunload", event => {
 
 applyTexts();
 setupDevPanel();
+if (!["pilot", "main"].includes(STUDY_PHASE)) {
+  console.error(`config.js の STUDY_PHASE が正しくありません("pilot" か "main" にしてください):`, STUDY_PHASE);
+}
 if (DEV.isDev) {
   checkEmailSets();     // 開発者モード:メールのセットを点検する
   checkLowRateCounts(); // 開発者モード:本番セットの抽選数を点検する
