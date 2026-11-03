@@ -97,13 +97,14 @@ function appendTrials(sendId, rows) {
 }
 
 // 参加者の行を participants シートに書く
-// 同じ参加者IDの行があれば上書きする。ただし、届いた内容がすでに書かれているものより古ければ(updateSeq が小さければ)何もしない
+// 「参加者IDと studyPhase の両方が同じ行」があれば上書きする(予備実験と本番で同じ P001 が来ても、別の行にするため)
+// ただし、届いた内容がすでに書かれているものより古ければ(updateSeq が小さければ)何もしない
 function upsertParticipant(row) {
   const sheet = getOrCreateSheet(PARTICIPANTS_SHEET);
   const headers = ensureHeaders(sheet, ["receivedAt"].concat(Object.keys(row)));
 
   const values = headers.map(header => header === "receivedAt" ? new Date() : toCell(row[header]));
-  const rowNumber = findRowByValue(sheet, headers.indexOf("participantId") + 1, row.participantId);
+  const rowNumber = findParticipantRow(sheet, headers, row.participantId, row.studyPhase);
 
   if (rowNumber) {
     const oldSeq = Number(sheet.getRange(rowNumber, headers.indexOf("updateSeq") + 1).getValue()) || 0;
@@ -113,6 +114,23 @@ function upsertParticipant(row) {
   }
   sheet.appendRow(values);
   return "created";
+}
+
+// participants シートで、参加者IDと studyPhase の両方が同じ行の番号を返す(なければ null)
+// studyPhase の列がまだ空の古い行は、studyPhase が「""」の行として扱う
+function findParticipantRow(sheet, headers, participantId, studyPhase) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return null;
+  const idColumn = headers.indexOf("participantId");
+  const phaseColumn = headers.indexOf("studyPhase");
+  const rows = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  for (let i = 0; i < rows.length; i++) {
+    const samePhase = String(phaseColumn === -1 ? "" : rows[i][phaseColumn]) === String(studyPhase || "");
+    if (String(rows[i][idColumn]) === String(participantId) && samePhase) {
+      return i + 2; // 1行目は見出しなので、2行目から数える
+    }
+  }
+  return null;
 }
 
 // シートを名前で探す。なければ作る

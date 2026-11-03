@@ -62,7 +62,8 @@ function isQueueEmpty() {
 }
 
 // trials シートに、試行の行をまとめて送る
-//   sendId: 例「P001-trials-practice」(同じフェーズを2回書き込まないための名前)
+//   sendId: 例「pilot-P001-trials-practice」(同じフェーズを2回書き込まないための名前。
+//           頭に studyPhase を付けて、予備実験と本番で同じ P001 が来ても別のものとして扱う)
 function sendTrials(sendId, rows) {
   addToQueue({ sendId: sendId, action: "trials", data: rows });
 }
@@ -72,7 +73,7 @@ function sendParticipant(row) {
   // まだ送れていない古い参加者の行は、新しい行で置き換える(いつも最新の内容だけ送ればよいため)
   const queue = loadQueue().filter(item => item.action !== "participant");
   saveQueue(queue);
-  addToQueue({ sendId: row.participantId + "-participant-" + row.updateSeq, action: "participant", data: row });
+  addToQueue({ sendId: row.studyPhase + "-" + row.participantId + "-participant-" + row.updateSeq, action: "participant", data: row });
 }
 
 function addToQueue(item) {

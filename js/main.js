@@ -96,7 +96,8 @@ function startBlock(blockNumber) {
 //   phaseKey: "practice" / "common" / "block1" / "block2"
 function sendPhase(phaseKey, results, info) {
   const rows = makeTrialRows(results, info);
-  sendTrials(record.participantId + "-trials-" + phaseKey, rows);
+  // 送信IDの頭に studyPhase を付ける(予備実験と本番で同じ P001 が来ても、別のものとして書き込まれるように)
+  sendTrials(record.studyPhase + "-" + record.participantId + "-trials-" + phaseKey, rows);
   sendParticipant(makeParticipantRow());
   if (DEV.isDev) checkCorrectCount(phaseKey, rows);
 }
