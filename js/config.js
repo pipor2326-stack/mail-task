@@ -30,8 +30,8 @@ const FOLDERS = ["授業", "就職活動", "手続き", "その他"];
 const SET_SIZES = {
   P: { total: 6, trap: 2 },   // 練習
   C: { total: 8, trap: 2 },   // 事前の共通課題
-  A: { total: 20, trap: 4 },  // 本番
-  B: { total: 20, trap: 4 }   // 本番
+  A: { total: 20, trap: 8 },  // 本番
+  B: { total: 20, trap: 8 }   // 本番
 };
 
 // 本番セット(A・B)で、正解フォルダごとにそろえる通数

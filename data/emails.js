@@ -1,6 +1,6 @@
 // メールのセット(研究者が編集する)
 //
-// このファイルが、メールの正式な版(面談前の下書き emails-draft.md をもとに作り、そのあと修正したもの)
+// このファイルが、メールの正式な版(面談前の案 emails-draft-v2.md の内容をそのまま入れたもの)
 // 会社名・人名はすべて架空
 //
 // 各メールの項目:
@@ -11,7 +11,7 @@
 //   correctFolder 正解のフォルダ(js/config.js の FOLDERS と同じ書き方)
 //   isTrap        ひっかけなら true、通常なら false
 //   trapType      ひっかけの種類(通常のメールは "")
-//                   keyword_class     … 件名に「授業」とあるが、差出人は教務課(正解:手続き)
+//                   keyword_class     … 件名に「授業」とあるが、差出人は教務課・学生課(正解:手続き)
 //                   keyword_procedure … 件名に「手続き」とあるが、差出人は先生(正解:授業)
 //                   sender_university … 差出人が「大学」だが、キャリアセンター(正解:就職活動)
 //                   sender_similar    … 選考中の企業に名前が似ているが、リストにない(正解:その他)
@@ -83,9 +83,9 @@ const EMAILS = {
     { id: "A03", sender: "林 浩二 先生(統計学)", subject: "教室変更のお知らせ",
       body: "来週から3号館201教室で授業を行います。",
       correctFolder: "授業", isTrap: false, trapType: "", note: "" },
-    { id: "A04", sender: "小川 真理 先生(英語コミュニケーション)", subject: "小テストの範囲",
-      body: "来週の小テストは、Unit 4と5から出題します。",
-      correctFolder: "授業", isTrap: false, trapType: "", note: "" },
+    { id: "A04", sender: "小川 真理 先生(英語コミュニケーション)", subject: "欠席の手続きについて",
+      body: "欠席する場合は、前日までに連絡してください。",
+      correctFolder: "授業", isTrap: true, trapType: "keyword_procedure", note: "" },
     { id: "A05", sender: "石田 誠 先生(社会学基礎)", subject: "レポート提出の手続きについて",
       body: "レポートは授業の掲示板から提出してください。締切は11月10日です。",
       correctFolder: "授業", isTrap: true, trapType: "keyword_procedure", note: "" },
@@ -98,9 +98,9 @@ const EMAILS = {
     { id: "A08", sender: "北斗ソフト株式会社 採用チーム", subject: "会社説明会の資料送付",
       body: "先日の会社説明会の資料をお送りします。",
       correctFolder: "就職活動", isTrap: false, trapType: "", note: "" },
-    { id: "A09", sender: "株式会社つばさ食品 人事部", subject: "適性検査の受検について",
-      body: "Webでの適性検査を、今週中に受けてください。",
-      correctFolder: "就職活動", isTrap: false, trapType: "", note: "" },
+    { id: "A09", sender: "大学 キャリアセンター", subject: "エントリーシートの添削のご案内",
+      body: "エントリーシートを職員が添削します。予約制です。",
+      correctFolder: "就職活動", isTrap: true, trapType: "sender_university", note: "" },
     { id: "A10", sender: "大学 キャリアセンター", subject: "就職活動の個別相談のご案内",
       body: "就職活動の悩みを、職員に個別で相談できます。",
       correctFolder: "就職活動", isTrap: true, trapType: "sender_university", note: "" },
@@ -113,9 +113,9 @@ const EMAILS = {
     { id: "A13", sender: "大学 保健センター", subject: "健康診断の再受診の案内",
       body: "健康診断を受けられなかった人のために、11月に再受診日を設けます。",
       correctFolder: "手続き", isTrap: false, trapType: "", note: "" },
-    { id: "A14", sender: "大学 教務課", subject: "卒業見込証明書の発行について",
-      body: "卒業見込証明書を、自動発行機で発行できるようになりました。",
-      correctFolder: "手続き", isTrap: false, trapType: "", note: "" },
+    { id: "A14", sender: "大学 学生課", subject: "授業料の納付期限について",
+      body: "後期の授業料の納付期限は、11月30日です。",
+      correctFolder: "手続き", isTrap: true, trapType: "keyword_class", note: "" },
     { id: "A15", sender: "大学 教務課", subject: "授業の履修登録の修正期間について",
       body: "後期の履修登録の修正は、10月31日までです。",
       correctFolder: "手続き", isTrap: true, trapType: "keyword_class", note: "" },
@@ -128,9 +128,9 @@ const EMAILS = {
     { id: "A18", sender: "書店ブックス大和(アルバイト先)", subject: "来月のシフト希望の提出",
       body: "来月のシフト希望を、金曜日までに出してください。",
       correctFolder: "その他", isTrap: false, trapType: "", note: "" },
-    { id: "A19", sender: "ネットショップ ハコブネ", subject: "ご注文の商品を発送しました",
-      body: "ご注文の商品を本日発送しました。",
-      correctFolder: "その他", isTrap: false, trapType: "", note: "" },
+    { id: "A19", sender: "北斗ソフトウェア株式会社", subject: "ITインターンシップの参加者募集",
+      body: "プログラミングを体験できるインターンシップを開きます。",
+      correctFolder: "その他", isTrap: true, trapType: "sender_similar", note: "" },
     { id: "A20", sender: "株式会社つばさフーズ", subject: "冬のインターンシップ参加者募集",
       body: "食品業界に興味のある学生を対象に、冬のインターンシップを行います。",
       correctFolder: "その他", isTrap: true, trapType: "sender_similar", note: "" }
@@ -147,9 +147,9 @@ const EMAILS = {
     { id: "B03", sender: "森田 修 先生(情報処理演習)", subject: "次回はPC教室で行います",
       body: "次回の授業は、2号館のPC教室で行います。",
       correctFolder: "授業", isTrap: false, trapType: "", note: "" },
-    { id: "B04", sender: "吉川 あゆみ 先生(中国語I)", subject: "中間テストの範囲について",
-      body: "中間テストは、第1課から第6課までです。",
-      correctFolder: "授業", isTrap: false, trapType: "", note: "" },
+    { id: "B04", sender: "吉川 あゆみ 先生(中国語I)", subject: "補講の参加手続きについて",
+      body: "補講に参加する人は、掲示板で申し込んでください。",
+      correctFolder: "授業", isTrap: true, trapType: "keyword_procedure", note: "" },
     { id: "B05", sender: "岡本 誠一 先生(教育学概論)", subject: "課題提出の手続きの変更",
       body: "課題の提出方法を、紙から授業の掲示板に変更します。",
       correctFolder: "授業", isTrap: true, trapType: "keyword_procedure", note: "" },
@@ -162,9 +162,9 @@ const EMAILS = {
     { id: "B08", sender: "株式会社つばさ食品 人事部", subject: "工場見学会のご案内",
       body: "選考に進んでいる方を対象に、工場見学会を行います。",
       correctFolder: "就職活動", isTrap: false, trapType: "", note: "" },
-    { id: "B09", sender: "青葉トラベル株式会社 採用担当", subject: "Web適性検査の受検期限",
-      body: "Web適性検査の受検期限は、11月8日です。",
-      correctFolder: "就職活動", isTrap: false, trapType: "", note: "" },
+    { id: "B09", sender: "大学 キャリアセンター", subject: "履歴書の書き方講座の参加者募集",
+      body: "履歴書の書き方を学べる講座を、11月に開きます。",
+      correctFolder: "就職活動", isTrap: true, trapType: "sender_university", note: "" },
     { id: "B10", sender: "大学 キャリアセンター", subject: "面接対策講座の参加者募集",
       body: "面接の練習ができる講座を、12月に開きます。",
       correctFolder: "就職活動", isTrap: true, trapType: "sender_university", note: "" },
@@ -177,9 +177,9 @@ const EMAILS = {
     { id: "B13", sender: "大学 保健センター", subject: "健康診断の結果の受け取り",
       body: "健康診断の結果を、保健センターで受け取ってください。",
       correctFolder: "手続き", isTrap: false, trapType: "", note: "" },
-    { id: "B14", sender: "大学 教務課", subject: "在学証明書の自動発行機の停止",
-      body: "11月3日は点検のため、自動発行機を使えません。",
-      correctFolder: "手続き", isTrap: false, trapType: "", note: "" },
+    { id: "B14", sender: "大学 教務課", subject: "授業の成績確認の期間について",
+      body: "前期の成績確認は、10月31日までです。",
+      correctFolder: "手続き", isTrap: true, trapType: "keyword_class", note: "" },
     { id: "B15", sender: "大学 教務課", subject: "授業の追加登録の申し込みについて",
       body: "追加で履修したい授業がある人は、申込書を提出してください。",
       correctFolder: "手続き", isTrap: true, trapType: "keyword_class", note: "" },
@@ -192,9 +192,9 @@ const EMAILS = {
     { id: "B18", sender: "ファミリーレストラン ひだまり(アルバイト先)", subject: "年末のシフトのお願い",
       body: "年末に入れる日を、店長まで教えてください。",
       correctFolder: "その他", isTrap: false, trapType: "", note: "" },
-    { id: "B19", sender: "動画配信サービス ミルフィ", subject: "今月のおすすめ作品",
-      body: "今月新しく配信された作品をご紹介します。",
-      correctFolder: "その他", isTrap: false, trapType: "", note: "" },
+    { id: "B19", sender: "株式会社つばさ食堂", subject: "店舗運営インターンシップの参加者募集",
+      body: "店舗の運営を体験できるインターンシップを開きます。",
+      correctFolder: "その他", isTrap: true, trapType: "sender_similar", note: "" },
     { id: "B20", sender: "北斗システム株式会社", subject: "エンジニア職の会社説明会",
       body: "IT業界に興味のある学生向けに、会社説明会を開きます。",
       correctFolder: "その他", isTrap: true, trapType: "sender_similar", note: "" }
