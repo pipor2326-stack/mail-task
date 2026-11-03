@@ -61,10 +61,34 @@ button {
 
 /* ===== 各画面 ===== */
 
+/* 同意画面の本文。文が長いので、画面に収まらないときはページ全体をスクロールして読む
+   (チェックボックスと「同意して始める」ボタンは、本文の一番下に来る) */
+.consent-heading {
+  margin: 20px 0 4px !important;
+}
+/* 箇条書き:「・」の文字はそのまま出し、2行目以降は「・」の後ろにそろえる */
+.consent-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 1em;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #444;
+}
+.consent-list li {
+  text-indent: -1em;
+}
 .consent-label {
   display: block;
-  margin: 16px 0;
+  margin: 24px 0 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
   font-size: 14px;
+}
+/* 終了画面の参加者ID */
+#end-participant-id strong {
+  font-size: 18px;
+  color: #0056b3;
 }
 #screen-closed, #screen-pccheck, #screen-already, #screen-end {
   text-align: center;
@@ -99,6 +123,12 @@ button {
 .question-text {
   margin: 0 0 10px;
   font-weight: bold;
+}
+/* 質問の文の下に添える注意書き */
+.question-note {
+  margin: -4px 0 8px !important;
+  font-size: 13px !important;
+  color: #666 !important;
 }
 .optional {
   margin-left: 6px;

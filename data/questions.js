@@ -10,6 +10,7 @@
 //             "scale"  … 数字の目盛りから1つ選ぶ(min〜max。minLabel・maxLabel は両端の説明)
 //             "text"   … 自由に書く
 //   required: false にすると、答えなくても先へ進める(書かなければ必須)
+//   note:     質問の文の下に、小さく添える注意書き(なくてもよい)
 
 const QUESTIONS = {
 
@@ -37,6 +38,7 @@ const QUESTIONS = {
   post: [
     { id: "dialogAttention", text: "〔仮〕確認の画面が出たとき、メールの内容を見直しましたか。", type: "scale",
       min: 1, max: 7, minLabel: "まったく見直さなかった", maxLabel: "毎回見直した" },
-    { id: "comment", text: "〔仮〕課題について、気づいたことや感想があればお書きください。", type: "text", required: false }
+    { id: "comment", text: "〔仮〕課題について、気づいたことや感想があればお書きください。", type: "text", required: false,
+      note: "お名前など、個人が分かることは書かないでください。" }
   ]
 };

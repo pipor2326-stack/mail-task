@@ -328,6 +328,11 @@ function startEnd() {
   content.style.display = "none";
   status.innerHTML = `<p>${TEXTS.save.sending}</p>`;
 
+  // 参加者IDを案内する(データの削除を希望するときに、参加者が伝えるため)
+  // 送信に失敗したままでも見えるよう、送信を確かめる前に出す
+  document.getElementById("end-participant-id").innerHTML =
+    TEXTS.end.participantId.replace("{ID}", `<strong>${record.participantId}</strong>`);
+
   onAllSent = () => {
     onAllSent = null;
     status.innerHTML = "";

@@ -94,8 +94,10 @@ function renderQuestions(container, questions, group) {
     }
 
     const optional = question.required === false ? `<span class="optional">${TEXTS.questions.optional}</span>` : "";
+    const note = question.note ? `<p class="question-note">${question.note}</p>` : "";
     return `<div class="question" data-name="${name}">
       <p class="question-text">${i + 1}. ${question.text}${optional}</p>
+      ${note}
       ${input}
     </div>`;
   });
