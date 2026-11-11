@@ -13,13 +13,15 @@ body {
   max-width: 720px;
   margin: 40px auto;
   background: #fff;
-  padding: 24px 28px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 28px 28px 32px;
+  border: 1px solid #e3e6eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 .screen h1 {
-  font-size: 20px;
-  color: #333;
+  font-size: 22px;
+  color: #222;
+  margin: 0 0 16px;
 }
 .screen p {
   font-size: 14px;
@@ -41,17 +43,21 @@ body {
 button {
   padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
 }
 .main-button {
   display: block;
+  min-height: 44px;
   margin: 24px auto 0;
-  padding: 10px 28px;
+  padding: 10px 32px;
   background: #0056b3;
   color: #fff;
   font-size: 15px;
+}
+.main-button:hover:not(:disabled) {
+  background: #00478f;
 }
 .main-button:disabled {
   background: #ccc;
@@ -60,6 +66,21 @@ button {
 }
 
 /* ===== 各画面 ===== */
+
+/* 課題の説明:texts.js の3つの段落(文はそのまま)を、段落ごとに薄い青の箱に入れて区切る */
+#screen-instructions [data-text="instructions.body"] p {
+  margin: 12px 0;
+  padding: 14px 18px;
+  background: #f3f7fd;
+  border-left: 4px solid #0056b3;
+  border-radius: 8px;
+}
+/* 「練習を始める」ボタンを少し大きくする */
+#screen-instructions .main-button {
+  min-height: 48px;
+  padding: 12px 48px;
+  font-size: 16px;
+}
 
 /* 同意画面の本文。文が長いので、画面に収まらないときはページ全体をスクロールして読む
    (チェックボックスと「同意して始める」ボタンは、本文の一番下に来る) */
@@ -112,8 +133,8 @@ button {
 .question {
   margin: 16px 0;
   padding: 12px 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid #e3e6eb;
+  border-radius: 8px;
 }
 /* 未回答のまま進もうとした質問 */
 .question.is-missing {
@@ -192,33 +213,45 @@ button {
   flex: 0 0 300px;
   background: #f7f9fc;
   border: 1px solid #dde3ec;
-  border-radius: 6px;
-  padding: 12px 16px;
+  border-radius: 10px;
+  padding: 16px;
   font-size: 14px;
   line-height: 1.7;
 }
 .task-rules h2 {
   font-size: 15px;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
-/* 2つ目の見出し(選考中の企業)の上を空ける */
+/* 2つ目の見出し(選考中の企業)の上に区切り線を入れ、ルールと分ける */
 .task-rules .rule-list + h2 {
   margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #dde3ec;
 }
-/* ルール:フォルダ名を太字で出し、その下にルールの文 */
+/* ルール:フォルダのアイコンと名前を太字で出し、その下にルールの文 */
 .rule-list {
   margin: 0;
 }
 .rule-list dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-weight: bold;
   color: #1f3b63;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 .rule-list dt:first-child {
   margin-top: 0;
 }
+/* ルールの文は、アイコンの後ろ(フォルダ名の頭)にそろえる。フォルダのあいだに薄い区切り線 */
 .rule-list dd {
-  margin: 0 0 0 1em;
+  margin: 2px 0 0 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e3e8f0;
+}
+.rule-list dd:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 .company-list {
   margin: 0;
@@ -230,27 +263,29 @@ button {
 
 /* メールの枠は高さを固定する(本文の長さでフォルダボタンの位置が動かないように) */
 .mail-card {
-  height: 180px;
+  height: 200px;
   overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 14px 16px;
+  border: 1px solid #d5dbe3;
+  border-radius: 10px;
+  padding: 4px 18px 0;
   font-size: 14px;
   box-sizing: border-box;
 }
+/* 差出人・件名・本文のあいだに薄い区切り線を入れて、3つの部分を分ける */
 .mail-row {
-  margin-bottom: 6px;
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #eceff3;
 }
 .mail-label {
-  display: inline-block;
-  width: 4em;
+  flex: 0 0 4em;
   color: #888;
 }
 .mail-subject {
   font-weight: bold;
 }
 .mail-body {
-  margin-top: 12px;
+  padding-top: 12px;
   line-height: 1.7;
   color: #444;
 }
@@ -274,18 +309,33 @@ button {
 .folder-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
+/* 4つとも同じ色・大きさ・枠。最初からどれかが選ばれて見える表示はしない */
 .folder-button {
-  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 60px;
   margin: 0;
+  padding: 0 4px;
   background: #e8eef7;
   color: #1f3b63;
   font-size: 16px;
+  white-space: nowrap;
   border: 1px solid #c5d3e8;
 }
 .folder-button:hover {
   background: #d5e2f5;
+}
+
+/* フォルダのアイコン(ルールの見出しとフォルダボタンで共通。4つとも同じ大きさ・同じ色) */
+.folder-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: #1f3b63;
 }
 
 /* 確認画面を出す空き場所。確認画面の箱と同じ高さを、ふだんから空けておく
@@ -313,7 +363,7 @@ button {
   height: 150px;
   background: #fff;
   border: 1px solid #c5d3e8;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px 28px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   text-align: center;

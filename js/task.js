@@ -27,6 +27,27 @@ function shuffleArray(array) {
   return result;
 }
 
+// フォルダのアイコン(見た目だけ。振り分けや記録には使わない)
+// ルールの見出しとフォルダボタンの両方に、同じ絵を同じ大きさ・同じ色で付ける(大きさと色は style.css の .folder-icon)
+// 線の色は文字と同じ色(currentColor)になる。表にないフォルダ名のときは、アイコンなしで表示する
+const FOLDER_ICONS = {
+  // 本
+  "授業": '<path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/>',
+  // かばん
+  "就職活動": '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  // 書類
+  "手続き": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  // フォルダ
+  "その他": '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+};
+
+// フォルダのアイコンの HTML を返す
+function folderIcon(folder) {
+  if (!FOLDER_ICONS[folder]) return "";
+  return `<svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${FOLDER_ICONS[folder]}</svg>`;
+}
+
 // 仕分け画面の部品を作る(ルール・メール・正誤表示・フォルダボタン)
 function buildTaskArea(container) {
   container.innerHTML = `
@@ -34,7 +55,7 @@ function buildTaskArea(container) {
       <div class="task-rules">
         <h2>${RULES.title}</h2>
         <dl class="rule-list">
-          ${RULES.items.map(item => `<dt>${item.folder}</dt><dd>${item.text}</dd>`).join("")}
+          ${RULES.items.map(item => `<dt>${folderIcon(item.folder)}<span>${item.folder}</span></dt><dd>${item.text}</dd>`).join("")}
         </dl>
         <h2>${RULES.companiesTitle}</h2>
         <ul class="company-list">${RULES.companies.map(company => `<li>${company}</li>`).join("")}</ul>
@@ -47,7 +68,7 @@ function buildTaskArea(container) {
         </div>
         <div class="task-feedback"></div>
         <div class="folder-buttons">
-          ${FOLDERS.map(folder => `<button class="folder-button" data-folder="${folder}">${folder}</button>`).join("")}
+          ${FOLDERS.map(folder => `<button class="folder-button" data-folder="${folder}">${folderIcon(folder)}<span>${folder}</span></button>`).join("")}
         </div>
         <!-- 確認画面を出す場所(フォルダボタンの下。ふだんは空いている) -->
         <div class="dialog-slot"></div>
