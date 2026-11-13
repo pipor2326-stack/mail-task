@@ -66,7 +66,7 @@ const TEXTS = {
         <li>・削除の受け付けは〔 年 月 日〕までです。それ以降は、分析を始めているため削除できません。</li>
       </ul>
       <p class="consent-heading"><strong>【連絡先】</strong></p>
-      <p>研究者:上野詩歩（関西大学社会学部社会学科心理学専攻）（shihou2326@gmail.com）</p>
+      <p>研究者:上野詩歩（関西大学社会学部社会学科心理学専攻）（k660915@kansai-u.ac.jp）</p>
     `,
     checkbox: "上記の内容を理解し、研究への参加に同意します",
     button: "同意して始める"
