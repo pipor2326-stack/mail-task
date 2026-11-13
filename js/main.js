@@ -16,6 +16,7 @@ function goTo(name) {
 
   // 仕分け画面:画面を開いたら課題を始め、終わったら次の画面へ
   // 練習と共通課題は全員同じ順番、本番は割り付けパターンで決まったセットと条件で、ランダムな順番
+  if (name === "rules") startRules();
   if (name === "practice") startPractice();
   if (name === "common") startCommon();
   if (name === "block1") startBlock(1);
@@ -278,6 +279,23 @@ function startAssign() {
     }
   );
 }
+
+// ===== ルールの確認画面 =====
+
+let rulesShownAt = null; // ルールの確認画面を開いた時刻(performance.now())
+
+// 画面を開いたら、仕分け画面の左の欄と同じ「あなたの設定」「重要」「ルール」を入れ、時間を測り始める
+function startRules() {
+  document.getElementById("rules-content").innerHTML = buildRulesHtml();
+  rulesShownAt = performance.now();
+}
+
+// 「練習を始める」:この画面にいた時間を記録し、参加者の行を更新して練習へ(待ち時間はない)
+document.getElementById("rules-button").addEventListener("click", () => {
+  record.rulesViewMs = Math.round(performance.now() - rulesShownAt);
+  sendParticipant(makeParticipantRow());
+  goNext();
+});
 
 // ===== 「次へ」系のボタン(押したら次の画面へ進むだけのもの) =====
 

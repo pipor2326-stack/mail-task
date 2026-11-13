@@ -75,7 +75,51 @@ button {
   border-left: 4px solid #0056b3;
   border-radius: 8px;
 }
-/* 「練習を始める」ボタンを少し大きくする */
+/* ルールの確認画面:仕分け画面の左の欄と同じ中身を、横に広く、少し大きめの文字で読みやすく並べる */
+.rules-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.rules-view .profile-box,
+.rules-view .task-rules {
+  padding: 16px 20px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.rules-view .profile-head h2,
+.rules-view .task-rules h2 {
+  font-size: 16px;
+}
+.rules-view .profile-box .profile-label {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.rules-view .profile-list {
+  font-size: 16px;
+}
+.rules-view .rule-important,
+.rules-view .rule-important p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.rules-view .rule-important {
+  padding: 12px 16px;
+}
+.rules-view .task-rules .rule-lead {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.rules-view .rule-list dt {
+  margin-top: 10px;
+}
+.rules-view .rule-list dd {
+  padding-bottom: 10px;
+}
+
+/* 「練習を始める」ボタンを少し大きくする(課題の説明・ルールの確認) */
+#screen-rules .main-button,
 #screen-instructions .main-button {
   min-height: 48px;
   padding: 12px 48px;

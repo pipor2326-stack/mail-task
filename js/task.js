@@ -48,35 +48,41 @@ function folderIcon(folder) {
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${FOLDER_ICONS[folder]}</svg>`;
 }
 
-// 仕分け画面の部品を作る(あなたの設定・ルール・メール・正誤表示・フォルダボタン)
+// 「あなたの設定」→「重要」→「メールの振り分けルール」の HTML を作る
+// 仕分け画面の左の欄と、ルールの確認画面(main.js)の両方で使う(文言とアイコンを同じにするため)
 // 文言はすべて data/rules.js から入れる
-function buildTaskArea(container) {
+function buildRulesHtml() {
   const profile = RULES.profile;
+  return `
+    <div class="profile-box">
+      <div class="profile-head">
+        <h2>${profile.title}</h2>
+        <span class="profile-badge">${profile.badge}</span>
+      </div>
+      <p class="profile-label">${profile.universityLabel}</p>
+      <ul class="profile-list"><li>${profile.university}</li></ul>
+      <p class="profile-label">${profile.companiesLabel}</p>
+      <ul class="profile-list">${profile.companies.map(company => `<li>${company}</li>`).join("")}</ul>
+    </div>
+    <div class="rule-important">
+      <strong>${RULES.importantTitle}</strong>
+      <p>${RULES.important}</p>
+    </div>
+    <div class="task-rules">
+      <h2>${RULES.title}</h2>
+      <p class="rule-lead">${RULES.lead}</p>
+      <dl class="rule-list">
+        ${RULES.items.map(item => `<dt>${folderIcon(item.folder)}<span>${item.folder}</span></dt><dd>${item.text}</dd>`).join("")}
+      </dl>
+    </div>
+  `;
+}
+
+// 仕分け画面の部品を作る(あなたの設定・ルール・メール・正誤表示・フォルダボタン)
+function buildTaskArea(container) {
   container.innerHTML = `
     <div class="task">
-      <div class="task-side">
-        <div class="profile-box">
-          <div class="profile-head">
-            <h2>${profile.title}</h2>
-            <span class="profile-badge">${profile.badge}</span>
-          </div>
-          <p class="profile-label">${profile.universityLabel}</p>
-          <ul class="profile-list"><li>${profile.university}</li></ul>
-          <p class="profile-label">${profile.companiesLabel}</p>
-          <ul class="profile-list">${profile.companies.map(company => `<li>${company}</li>`).join("")}</ul>
-        </div>
-        <div class="rule-important">
-          <strong>${RULES.importantTitle}</strong>
-          <p>${RULES.important}</p>
-        </div>
-        <div class="task-rules">
-          <h2>${RULES.title}</h2>
-          <p class="rule-lead">${RULES.lead}</p>
-          <dl class="rule-list">
-            ${RULES.items.map(item => `<dt>${folderIcon(item.folder)}<span>${item.folder}</span></dt><dd>${item.text}</dd>`).join("")}
-          </dl>
-        </div>
-      </div>
+      <div class="task-side">${buildRulesHtml()}</div>
       <div class="task-main">
         <div class="mail-card">
           <div class="mail-row"><span class="mail-label">差出人</span><span class="mail-sender"></span></div>

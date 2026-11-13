@@ -9,6 +9,7 @@ const SCREEN_ORDER = [
   "consent",        // 同意
   "prequestions",   // 事前質問
   "instructions",   // 課題の共通説明
+  "rules",          // ルールの確認(練習の前に、ルールだけを読む)
   "practice",       // 練習(セットP)
   "commonintro",    // 共通課題の説明
   "common",         // 事前の共通課題(セットC)

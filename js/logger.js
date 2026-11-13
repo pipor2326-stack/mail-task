@@ -62,6 +62,7 @@ const record = {
   userAgent: navigator.userAgent,
 
   // 各フェーズの成績(正答数は「最終的に確定したフォルダ」が正しかった数)
+  rulesViewMs: null,       // ルールの確認画面にいた時間(ミリ秒。画面を開いてから「練習を始める」を押すまで)
   practiceCorrect: null,
   practiceTimeMs: null,
   commonCorrect: null,
