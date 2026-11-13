@@ -209,24 +209,76 @@ button {
   gap: 24px;
   align-items: flex-start;
 }
+/* 左の欄:上から「あなたの設定」「重要」「振り分けのルール」(幅は 334px で、今までの左の欄と同じ)
+   ブラウザの表示部分の高さが低くても、なるべくスクロールせずに全部見えるよう、余白と行間を詰めている
+   (文字の大きさは変えない) */
+.task-side {
+  flex: 0 0 334px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* あなたの設定:独立した薄い青の枠。大学と企業を箇条書きで目立たせる */
+.profile-box {
+  background: #eef4fc;
+  border: 1px solid #c9daf2;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.profile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.profile-head h2 {
+  font-size: 15px;
+  margin: 0;
+}
+/* 右上の「実験用プロフィール」の札 */
+.profile-badge {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: #0056b3;
+  background: #dbe8fb;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.profile-box .profile-label {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f6b7a;
+}
+.profile-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #1f3b63;
+}
+
 .task-rules {
-  flex: 0 0 300px;
   background: #f7f9fc;
   border: 1px solid #dde3ec;
   border-radius: 10px;
-  padding: 16px;
+  padding: 10px 16px;
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.45;
 }
 .task-rules h2 {
   font-size: 15px;
-  margin: 0 0 10px;
+  margin: 0 0 2px;
 }
-/* 2つ目の見出し(選考中の企業)の上に区切り線を入れ、ルールと分ける */
-.task-rules .rule-list + h2 {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #dde3ec;
+/* ルールの前の一文 */
+.task-rules .rule-lead {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #555;
 }
 /* ルール:フォルダのアイコンと名前を太字で出し、その下にルールの文 */
 .rule-list {
@@ -238,24 +290,40 @@ button {
   gap: 6px;
   font-weight: bold;
   color: #1f3b63;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 .rule-list dt:first-child {
   margin-top: 0;
 }
 /* ルールの文は、アイコンの後ろ(フォルダ名の頭)にそろえる。フォルダのあいだに薄い区切り線 */
 .rule-list dd {
-  margin: 2px 0 0 24px;
-  padding-bottom: 10px;
+  margin: 0 0 0 24px;
+  padding-bottom: 5px;
   border-bottom: 1px solid #e3e8f0;
 }
 .rule-list dd:last-child {
   padding-bottom: 0;
   border-bottom: none;
 }
-.company-list {
+/* 重要:「あなたの設定」のすぐ下の、薄い黄色の枠。「重要」の見出しは、文の頭に並べる */
+.rule-important {
+  padding: 8px 12px;
+  background: #fff8e1;
+  border: 1px solid #f0d98a;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.rule-important strong {
+  margin-right: 6px;
+  color: #8a6100;
+}
+.rule-important p {
+  display: inline;
   margin: 0;
-  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5c4a12;
 }
 .task-main {
   flex: 1;

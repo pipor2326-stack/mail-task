@@ -139,6 +139,12 @@ function checkEmailSets() {
       seenSubjects[mail.subject] = mail.id;
 
       // ひっかけなら trapType があり、通常なら trapType は空
+      // trapGroup は、TRAP_GROUPS で trapType が入っているグループと同じ名前にする(通常のメールは "")
+      const group = TRAP_GROUPS.find(g => g.trapTypes.includes(mail.trapType));
+      const expectedGroup = mail.isTrap && group ? group.name : "";
+      if ((mail.trapGroup || "") !== expectedGroup) {
+        console.error(`${mail.id}:trapGroup「${mail.trapGroup}」が、TRAP_GROUPS から決まるグループ「${expectedGroup}」と食い違っています`);
+      }
       if (mail.isTrap !== (mail.trapType !== "")) {
         console.error(`${mail.id}:isTrap(${mail.isTrap})と trapType(「${mail.trapType}」)が食い違っています`);
       }

@@ -28,11 +28,13 @@ const PATTERNS = {
 
 // 低頻度条件で、ひっかけを抽選するときのグループ(SPEC.md 4章)
 // グループごとに「ひっかけの数 × LOW_RATE」通を選ぶ(A・B は各グループ4通なので、1通ずつ)
-//   name:      グループの名前(開発者モードの表示用)
+//   name:      グループの名前(data/emails.js の trapGroup と同じ書き方。開発者モードの表示にも使う)
 //   trapTypes: このグループに入れるひっかけの種類(data/emails.js の trapType)
 const TRAP_GROUPS = [
-  { name: "件名の言葉", trapTypes: ["keyword_class", "keyword_procedure"] },
-  { name: "差出人", trapTypes: ["sender_university", "sender_similar"] }
+  // 似ているが、自分のものではない(正解:その他)
+  { name: "not_mine", trapTypes: ["similar_company", "other_university"] },
+  // 見た目は違うが、自分のもの
+  { name: "is_mine", trapTypes: ["company_other_dept", "career_center", "course_procedure_subject", "office_nonprocedure_subject"] }
 ];
 
 // ===== 課題 =====

@@ -48,17 +48,34 @@ function folderIcon(folder) {
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${FOLDER_ICONS[folder]}</svg>`;
 }
 
-// 仕分け画面の部品を作る(ルール・メール・正誤表示・フォルダボタン)
+// 仕分け画面の部品を作る(あなたの設定・ルール・メール・正誤表示・フォルダボタン)
+// 文言はすべて data/rules.js から入れる
 function buildTaskArea(container) {
+  const profile = RULES.profile;
   container.innerHTML = `
     <div class="task">
-      <div class="task-rules">
-        <h2>${RULES.title}</h2>
-        <dl class="rule-list">
-          ${RULES.items.map(item => `<dt>${folderIcon(item.folder)}<span>${item.folder}</span></dt><dd>${item.text}</dd>`).join("")}
-        </dl>
-        <h2>${RULES.companiesTitle}</h2>
-        <ul class="company-list">${RULES.companies.map(company => `<li>${company}</li>`).join("")}</ul>
+      <div class="task-side">
+        <div class="profile-box">
+          <div class="profile-head">
+            <h2>${profile.title}</h2>
+            <span class="profile-badge">${profile.badge}</span>
+          </div>
+          <p class="profile-label">${profile.universityLabel}</p>
+          <ul class="profile-list"><li>${profile.university}</li></ul>
+          <p class="profile-label">${profile.companiesLabel}</p>
+          <ul class="profile-list">${profile.companies.map(company => `<li>${company}</li>`).join("")}</ul>
+        </div>
+        <div class="rule-important">
+          <strong>${RULES.importantTitle}</strong>
+          <p>${RULES.important}</p>
+        </div>
+        <div class="task-rules">
+          <h2>${RULES.title}</h2>
+          <p class="rule-lead">${RULES.lead}</p>
+          <dl class="rule-list">
+            ${RULES.items.map(item => `<dt>${folderIcon(item.folder)}<span>${item.folder}</span></dt><dd>${item.text}</dd>`).join("")}
+          </dl>
+        </div>
       </div>
       <div class="task-main">
         <div class="mail-card">
@@ -128,6 +145,7 @@ function runTask(options) {
       emailId: mail.id,
       isTrap: mail.isTrap,
       trapType: mail.trapType,
+      trapGroup: mail.trapGroup,  // ひっかけのまとまり(not_mine / is_mine。通常は "")
       correctFolder: mail.correctFolder,
       firstFolder: null,          // 最初に選んだフォルダ
       finalFolder: null,          // 最終的に確定したフォルダ
