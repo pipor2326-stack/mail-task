@@ -93,8 +93,14 @@ function buildTaskArea(container) {
         <div class="folder-buttons">
           ${FOLDERS.map(folder => `<button class="folder-button" data-folder="${folder}">${folderIcon(folder)}<span>${folder}</span></button>`).join("")}
         </div>
-        <!-- 確認画面を出す場所(フォルダボタンの下。ふだんは空いている) -->
-        <div class="dialog-slot"></div>
+        <!-- 確認画面を出す場所(フォルダボタンの下。ふだんは空いている)
+             練習で不正解のときは、ここに理由と「次へ」ボタンを出す(確定したあとなので、確認画面とは重ならない) -->
+        <div class="dialog-slot">
+          <div class="feedback-panel">
+            <p class="feedback-reason"></p>
+            <button class="main-button feedback-next">${TEXTS.task.next}</button>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -113,6 +119,7 @@ function runTask(options) {
   buildTaskArea(container);
   const mailCard = container.querySelector(".mail-card");
   const feedback = container.querySelector(".task-feedback");
+  const feedbackPanel = container.querySelector(".feedback-panel"); // 練習で不正解のときの、理由と「次へ」
 
   const results = [];   // 試行ごとの結果
   let index = 0;        // いま何通目か(0から数える)
@@ -231,21 +238,37 @@ function runTask(options) {
     results.push(trial);
 
     if (options.showFeedback) {
-      // 練習だけ:正誤を表示してから次へ
+      // 練習だけ:正誤を表示する
       feedback.textContent = isCorrect
         ? TEXTS.task.correct
         : TEXTS.task.incorrect.replace("{正解}", mail.correctFolder);
       feedback.className = "task-feedback " + (isCorrect ? "is-correct" : "is-incorrect");
-      setTimeout(blankThenNext, isCorrect ? FEEDBACK_MS_CORRECT : FEEDBACK_MS_WRONG);
+      if (isCorrect) {
+        // 正解:少し見せてから、自動で次へ
+        setTimeout(blankThenNext, FEEDBACK_MS_CORRECT);
+      } else {
+        // 不正解:理由を出し、「次へ」が押されるまで待つ(フォルダボタンは押せないまま)
+        feedbackPanel.querySelector(".feedback-reason").textContent = mail.feedbackReason || "";
+        feedbackPanel.style.display = "block";
+      }
     } else {
       blankThenNext();
     }
   }
 
+  // 練習で不正解のときの「次へ」
+  container.querySelector(".feedback-next").addEventListener("click", event => {
+    event.currentTarget.blur();
+    if (feedbackPanel.style.display !== "block") return; // 2度押しは無視する
+    feedbackPanel.style.display = "none";
+    blankThenNext();
+  });
+
   // メールを消して BLANK_MS ミリ秒の空白をはさみ、次のメールを表示する
   function blankThenNext() {
     mailCard.style.visibility = "hidden";
     feedback.textContent = "";
+    feedbackPanel.style.display = "none";
     setTimeout(() => {
       index++;
       showEmail();

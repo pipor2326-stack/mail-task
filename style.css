@@ -457,6 +457,27 @@ button {
   margin-top: 20px;
 }
 
+/* 練習で不正解のときの理由と「次へ」(確認画面を出す空き場所に、同じ大きさで出す) */
+.feedback-panel {
+  display: none; /* 不正解のときに js/task.js で表示する */
+  box-sizing: border-box;
+  height: 150px;
+  padding: 16px 20px;
+  background: #fff5f5;
+  border: 1px solid #f3c2c0;
+  border-radius: 12px;
+  text-align: center;
+}
+.feedback-panel .feedback-reason {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #7a1f1f;
+}
+.feedback-panel .main-button {
+  margin: 0 auto;
+}
+
 /* ===== 確認画面 ===== */
 
 /* 画面全体をごく薄く覆う(覆いがあるので、後ろのフォルダボタンは押せない)

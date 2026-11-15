@@ -151,6 +151,9 @@ function checkEmailSets() {
       if (set === "P" && typeof mail.showDialog !== "boolean") {
         console.error(`${mail.id}:練習のメールに showDialog(true / false)がありません`);
       }
+      if (set === "P" && !(typeof mail.feedbackReason === "string" && mail.feedbackReason !== "")) {
+        console.error(`${mail.id}:練習のメールに feedbackReason(不正解のときの理由)がありません`);
+      }
     });
 
     // ひっかけの種類ごとの数

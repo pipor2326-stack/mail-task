@@ -23,6 +23,7 @@
 //                 低頻度の抽選は js/config.js の TRAP_GROUPS で分ける。点検で、この値と食い違いがないかを確かめる
 //   note          研究者用メモ:なぜその正解か(参加者には表示しない。下書きにないので空欄)
 //   showDialog    【セットPだけ】練習で確認画面を出すなら true
+//   feedbackReason【セットPだけ】練習で不正解のとき、「不正解(正しくは「〇〇」)」のあとに出す理由の文
 //
 // 表示順:P と C はこの並び順のまま(全員同じ)。A と B は参加者ごとにランダム
 
@@ -32,22 +33,34 @@ const EMAILS = {
   P: [
     { id: "P01", sender: "みなと大学 小川 真理 先生(英語コミュニケーション)", subject: "来週の授業の持ち物",
       body: "来週は英和辞典を持ってきてください。",
-      correctFolder: "授業", isTrap: false, trapType: "", trapGroup: "", note: "", showDialog: true },
-    { id: "P02", sender: "写真サークル FOCUS", subject: "撮影会のお知らせ",
-      body: "今月の撮影会は公園で行います。参加希望は返信してください。",
-      correctFolder: "その他", isTrap: false, trapType: "", trapGroup: "", note: "", showDialog: false },
+      correctFolder: "授業", isTrap: false, trapType: "", trapGroup: "", note: "",
+      feedbackReason: "差出人は、みなと大学の先生です。",
+      showDialog: true },
+    { id: "P02", sender: "青葉ツーリスト株式会社", subject: "インターンシップ説明会のご案内",
+      body: "旅行業界に興味のある学生向けに、説明会を開催します。",
+      correctFolder: "その他", isTrap: true, trapType: "similar_company", trapGroup: "not_mine", note: "",
+      feedbackReason: "差出人は「青葉ツーリスト株式会社」で、設定の「青葉トラベル株式会社」とは別の企業です。",
+      showDialog: false },
     { id: "P03", sender: "みなと国際大学 学生課", subject: "公開講座の受講手続きについて",
       body: "本学の公開講座の受講手続きをご案内します。",
-      correctFolder: "その他", isTrap: true, trapType: "other_university", trapGroup: "not_mine", note: "", showDialog: true },
+      correctFolder: "その他", isTrap: true, trapType: "other_university", trapGroup: "not_mine", note: "",
+      feedbackReason: "差出人は「みなと国際大学」で、設定の「みなと大学」とは別の大学です。",
+      showDialog: true },
     { id: "P04", sender: "北斗ソフト株式会社 採用チーム", subject: "書類選考の結果のお知らせ",
       body: "書類選考の結果をマイページに掲載しました。",
-      correctFolder: "就職活動", isTrap: false, trapType: "", trapGroup: "", note: "", showDialog: false },
+      correctFolder: "就職活動", isTrap: false, trapType: "", trapGroup: "", note: "",
+      feedbackReason: "差出人は、設定の選考中の企業(北斗ソフト株式会社)です。",
+      showDialog: false },
     { id: "P05", sender: "みなと大学 キャリアセンター", subject: "業界研究セミナーのご案内",
       body: "さまざまな業界の仕事を知るセミナーを開きます。",
-      correctFolder: "就職活動", isTrap: true, trapType: "career_center", trapGroup: "is_mine", note: "", showDialog: false },
+      correctFolder: "就職活動", isTrap: true, trapType: "career_center", trapGroup: "is_mine", note: "",
+      feedbackReason: "差出人は、みなと大学のキャリアセンターです。",
+      showDialog: false },
     { id: "P06", sender: "みなと大学 学生課", subject: "住所変更の届け出について",
       body: "引っ越しをした人は、学生課の窓口で届け出をしてください。",
-      correctFolder: "手続き", isTrap: false, trapType: "", trapGroup: "", note: "", showDialog: true }
+      correctFolder: "手続き", isTrap: false, trapType: "", trapGroup: "", note: "",
+      feedbackReason: "差出人は、みなと大学の学生課です。",
+      showDialog: true }
   ],
 
   // 事前の共通課題(8通。確認画面なし)
