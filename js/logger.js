@@ -38,6 +38,7 @@ const record = {
   isDev: DEV.isDev,        // 開発者モードか(テストのデータを分析から除くため)
   isTest: DEV.isTest,      // テストモードか(同上)
   studyPhase: STUDY_PHASE, // 予備実験("pilot")か本番("main")か(config.js で設定)
+  taskVersion: TASK_VERSION, // 課題の版(config.js で設定)
   completed: false,        // 最後まで終えたか
   lastScreen: null,        // 最後にいた画面(途中で閉じた人が、どこでやめたかが分かる)
   pattern: null,           // 割り付けパターン(1〜4)
@@ -69,11 +70,14 @@ const record = {
   commonTimeMs: null,
   block1Set: null,
   block1Condition: null,
-  block1TimeMs: null,      // 総作業時間:最初のメールを表示してから、最後のメールを確定するまで
-  block1Correct: null,
+  block1TimeMs: null,      // 総作業時間:最初のメールを表示してから、最後のメールを確定するまで(時間切れなら制限時間)
+  block1Correct: null,     // 振り分けたメールのうち、正しかった数
   block1DialogDrawn: null, // 確認画面を出すと抽選した試行の数
   block1DialogTrap: null,  //   そのうち、ひっかけ
   block1DialogNormal: null,//   そのうち、通常
+  block1TimedOut: null,    // 時間切れになったか
+  block1Processed: null,   // 振り分けた(確定した)メールの数
+  block1DialogShown: null, // 実際に確認画面が出た回数(時間切れで確定しなかったメールの分も含む)
   block2Set: null,
   block2Condition: null,
   block2TimeMs: null,
@@ -81,6 +85,9 @@ const record = {
   block2DialogDrawn: null,
   block2DialogTrap: null,
   block2DialogNormal: null,
+  block2TimedOut: null,
+  block2Processed: null,
+  block2DialogShown: null,
 
   // 事前質問・主観評価・全体の質問の回答は、答えたときに「pre_〇〇」「rating1_〇〇」などの名前で足される
   // (項目は data/questions.js で決める)
@@ -178,7 +185,8 @@ function makeTrialRows(results, info) {
     set: info.set,
     isDev: record.isDev,
     isTest: record.isTest,
-    studyPhase: record.studyPhase
+    studyPhase: record.studyPhase,
+    taskVersion: record.taskVersion
   }, trial));
 }
 

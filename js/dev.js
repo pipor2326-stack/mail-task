@@ -6,6 +6,7 @@
 //   &pattern=3           割り付けパターンを指定する(段階5で使う)
 //   &n=4                 1ブロックの試行数を減らす(段階3以降で使う)
 //   &rest=3              休憩の待ち時間(秒)を変える(config.js の REST_MIN_SECONDS は変えない)
+//   &limit=20            本番のブロックの制限時間(秒)を変える(config.js の BLOCK_TIME_LIMIT_SEC は変えない)
 //
 // テストモード(URL の末尾に ?test=1 を付けたとき。SPEC.md 8章)
 //   参加者とまったく同じ動きにする(警告・PC チェック・参加済みチェック・ランダムな順番。札は出さない)
@@ -21,8 +22,25 @@ const DEV = {
   start: urlParams.get("start"),            // 指定がなければ null
   pattern: parsePattern(urlParams.get("pattern")),
   n: Number(urlParams.get("n")) || null,
-  rest: parseRestSeconds(urlParams.get("rest"))
+  rest: parseRestSeconds(urlParams.get("rest")),
+  limit: parseLimitSeconds(urlParams.get("limit"))
 };
+
+// &limit= の値を秒数にする。1以上の整数でなければ null(指定なし扱い)
+function parseLimitSeconds(value) {
+  if (value === null) return null;
+  const seconds = Number(value);
+  if (!Number.isInteger(seconds) || seconds < 1) {
+    console.error("&limit= の値が正しくありません(1以上の整数にしてください):", value);
+    return null;
+  }
+  return seconds;
+}
+
+// 本番のブロックの制限時間(秒)。開発者モードで &limit= があればその秒数、なければ BLOCK_TIME_LIMIT_SEC
+function getBlockTimeLimitSec() {
+  return DEV.limit !== null ? DEV.limit : BLOCK_TIME_LIMIT_SEC;
+}
 
 // &pattern= の値を 1〜4 の数にする。それ以外なら null(指定なし扱い)
 function parsePattern(value) {
@@ -51,6 +69,7 @@ if (!DEV.isDev) {
   DEV.start = null;
   DEV.n = null;
   DEV.rest = null;
+  DEV.limit = null;
   if (!DEV.isTest) DEV.pattern = null;
 }
 
@@ -74,6 +93,7 @@ function setupDevPanel() {
     <div>パターン: <span id="dev-pattern">-</span></div>
     <div>抽選: <span id="dev-draw">-</span></div>
     <div>いまの試行: <span id="dev-trial">-</span></div>
+    <div>制限時間(${getBlockTimeLimitSec()}秒): <span id="dev-timer">-</span></div>
     <div>送信待ち: <span id="dev-queue">0</span> 件</div>
     <button id="dev-clear-button">参加済みの記録を消す</button>
   `;
@@ -201,6 +221,12 @@ function updateDevState(participantId, patternText) {
   const patternSpan = document.getElementById("dev-pattern");
   if (idSpan) idSpan.textContent = participantId || "-";
   if (patternSpan) patternSpan.textContent = patternText || "-";
+}
+
+// 札の「制限時間:」に、残り時間と時間切れになったかを表示する(task.js から呼ばれる)
+function updateDevTimer(text) {
+  const span = document.getElementById("dev-timer");
+  if (span) span.textContent = text;
 }
 
 // 札の「送信待ち:」の件数を更新する(save.js から、送信待ちリストが変わるたびに呼ばれる)

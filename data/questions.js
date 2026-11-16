@@ -40,6 +40,8 @@ const QUESTIONS = {
   post: [
     { id: "dialogAttention", text: "確認の画面が出たとき、メールの内容を見直しましたか。", type: "scale",
       min: 1, max: 7, minLabel: "まったく見直さなかった", maxLabel: "毎回見直した" },
+    { id: "timePressure", text: "課題中、残り時間をどのくらい気にしていましたか。", type: "scale",
+      min: 1, max: 7, minLabel: "まったく気にしなかった", maxLabel: "とても気にしていた" },
     { id: "comment", text: "課題について、気づいたことや感想があればお書きください。", type: "text", required: false,
       note: "お名前など、個人が分かることは書かないでください。" }
   ]

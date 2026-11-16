@@ -371,6 +371,19 @@ button {
 }
 .task-main {
   flex: 1;
+  position: relative; /* 残り時間(.task-timer)を、この中の右上に置くため */
+}
+
+/* 残り時間:メールの枠の右上(見出しと同じ高さの空いているところ)に重ねて出す
+   ほかの部分の位置を動かさないよう、場所をとらない置き方にしている。色は変えず、点滅もさせない */
+.task-timer {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #444;
+  white-space: nowrap;
 }
 
 /* メールの枠は高さを固定する(本文の長さでフォルダボタンの位置が動かないように) */
@@ -415,6 +428,10 @@ button {
 }
 .task-feedback.is-incorrect {
   color: #c62828;
+}
+/* 時間切れ(本番のブロック):正誤ではないので、ふつうの色で出す */
+.task-feedback.is-timeup {
+  color: #1f3b63;
 }
 
 /* フォルダボタン:4つを同じ大きさで横に並べる */

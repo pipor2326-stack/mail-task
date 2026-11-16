@@ -7,6 +7,7 @@
 //     shuffle:      true なら表示順をランダムにする(本番の A・B だけ true)
 //     showFeedback: true なら確定後に「正解/不正解」を表示する(練習だけ true)
 //     dialogMode:   確認画面の出し方("none" / "practice" / "low" / "high"。js/dialog.js を参照)
+//     timeLimitMs:  制限時間(ミリ秒。本番のブロックだけ。なければ制限なし)
 //     onFinish:     全部終わったときに呼ぶ関数。試行の結果の一覧と、まとめ(summary)を渡す
 //   });
 //
@@ -84,6 +85,8 @@ function buildTaskArea(container) {
     <div class="task">
       <div class="task-side">${buildRulesHtml()}</div>
       <div class="task-main">
+        <!-- 残り時間(本番のブロックだけ表示。ほかの部分の位置を動かさないよう、メールの枠の右上に重ねて出す) -->
+        <div class="task-timer"></div>
         <div class="mail-card">
           <div class="mail-row"><span class="mail-label">差出人</span><span class="mail-sender"></span></div>
           <div class="mail-row"><span class="mail-label">件名</span><span class="mail-subject"></span></div>
@@ -128,20 +131,66 @@ function runTask(options) {
   let tabAtStart = null; // 試行の始まりの時点で、タブを離れた回数と時間
   let dialogOpenAt = null; // 確認画面を出した時刻
   let backAt = null;       // 「戻る」を押した時刻
-  let blockStartAt = null; // 最初のメールを表示した時刻(総作業時間の始まり)
+  let blockStartAt = null; // 最初のメールを表示した時刻(総作業時間の始まり。制限時間もここから数える)
+  let finished = false;    // true になったら、このブロックはもう何も受け付けない(全部終えた・時間切れ)
+  let dialogShownCount = 0; // 実際に確認画面が出た回数(時間切れで確定しなかったメールの分も数える)
+
+  // 制限時間(本番のブロックだけ。練習と共通課題は null で、制限なし)
+  const timeLimitMs = options.timeLimitMs || null;
+  const timerBox = container.querySelector(".task-timer");
+  let timerId = null;
 
   console.log("表示順:", order.map(mail => mail.id));
   console.log("確認画面を出す試行:", Array.from(draw.ids), "(ひっかけ", draw.trapCount, "/ 通常", draw.normalCount, ")");
   updateDevDraw(order, draw);
+  updateDevTimer(timeLimitMs ? "開始前" : "なし");
+
+  // 残り時間を表示し、時間になったら時間切れにする(最初のメールを表示してから、0.2秒ごとに呼ぶ)
+  function updateTimer() {
+    const remainingMs = timeLimitMs - (performance.now() - blockStartAt);
+    const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+    timerBox.textContent = TEXTS.task.timeRemaining.replace("{秒}", remainingSec);
+    updateDevTimer("残り " + remainingSec + "秒 / 時間切れ: なし");
+    if (remainingMs <= 0) timeUp();
+  }
+
+  // 時間切れ:途中のメールは確定せず(試行の行を作らない)、「時間になりました」を見せてから終える
+  function timeUp() {
+    if (finished) return;
+    finished = true;
+    locked = true;
+    clearInterval(timerId);
+    closeConfirmDialog(); // 確認画面が出ていたら閉じる(「実行」「戻る」の処理は呼ばない)
+    mailCard.style.visibility = "hidden";
+    feedback.textContent = TEXTS.task.timeUp;
+    feedback.className = "task-feedback is-timeup";
+    updateDevTimer("残り 0秒 / 時間切れ: あり");
+    updateDevTrial(null);
+    setTimeout(() => {
+      options.onFinish(results, {
+        startAt: blockStartAt,
+        endAt: blockStartAt + timeLimitMs, // 作業時間は制限時間と同じになる
+        draw: draw,
+        timedOut: true,
+        dialogShownCount: dialogShownCount
+      });
+    }, TIME_UP_MESSAGE_MS);
+  }
 
   // index 通目のメールを表示する。全部終わっていたら onFinish を呼ぶ
   function showEmail() {
+    if (finished) return; // 時間切れのあとは、次のメールを出さない
     if (index >= order.length) {
+      finished = true;
+      clearInterval(timerId);
+      if (timeLimitMs) updateDevTimer("全部振り分けた / 時間切れ: なし");
       updateDevTrial(null);
       options.onFinish(results, {
         startAt: blockStartAt,
         endAt: results.length > 0 ? results[results.length - 1].decidedAt : blockStartAt,
-        draw: draw
+        draw: draw,
+        timedOut: false,
+        dialogShownCount: dialogShownCount
       });
       return;
     }
@@ -176,7 +225,14 @@ function runTask(options) {
       tabLeaveMs: 0               // この試行中にタブを離れていた合計時間
     };
     trial.shownAt = roundMs(performance.now());
-    if (blockStartAt === null) blockStartAt = trial.shownAt;
+    if (blockStartAt === null) {
+      blockStartAt = trial.shownAt;
+      // 本番のブロック:最初のメールを表示した時点から、制限時間を数え始める
+      if (timeLimitMs) {
+        updateTimer();
+        timerId = setInterval(updateTimer, 200);
+      }
+    }
     tabAtStart = getTabStats();
     dialogOpenAt = null;
     backAt = null;
@@ -187,6 +243,7 @@ function runTask(options) {
 
   // フォルダボタンが押されたとき
   function onFolderClick(folder, clickAt) {
+    if (finished) return;
     const mail = order[index];
 
     if (trial.firstFolder === null) {
@@ -195,6 +252,7 @@ function runTask(options) {
       trial.firstClickAt = roundMs(clickAt);
       if (draw.ids.has(mail.id)) {
         trial.dialogShown = true;
+        dialogShownCount++;
         dialogOpenAt = performance.now();
         openConfirmDialog(folder, container.querySelector(".dialog-slot"),
           () => {
@@ -223,6 +281,7 @@ function runTask(options) {
 
   // フォルダを確定したとき(decidedAt:確定した時刻)
   function decide(folder, decidedAt) {
+    if (finished) return; // 時間切れのあとに届いた確定は数えない
     const mail = order[index];
     const isCorrect = folder === mail.correctFolder;
     trial.finalFolder = folder;

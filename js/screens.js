@@ -64,7 +64,8 @@ function getText(key) {
     console.error("texts.js に文言がありません:", key);
     return "";
   }
-  return value;
+  // {制限時間} は、本番のブロックの制限時間(秒)に置き換える(開発者モードの &limit= も反映する)
+  return value.replace(/\{制限時間\}/g, getBlockTimeLimitSec());
 }
 
 // ===== 質問の画面(事前質問・主観評価・全体の質問) =====

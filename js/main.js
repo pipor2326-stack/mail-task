@@ -38,13 +38,15 @@ function goNext() {
 // いまの画面で仕分け課題を始める
 // shuffle:表示順をランダムにするか、showFeedback:正誤を表示するか、dialogMode:確認画面の出し方
 // onFinish:終わったときに呼ぶ関数(試行の結果と、まとめを渡す)
-function startTask(emails, shuffle, showFeedback, dialogMode, onFinish) {
+// timeLimitMs:制限時間(ミリ秒。本番のブロックだけ。省くと制限なし)
+function startTask(emails, shuffle, showFeedback, dialogMode, onFinish, timeLimitMs) {
   runTask({
     container: document.querySelector("#screen-" + currentScreen + " .task-container"),
     emails: emails,
     shuffle: shuffle,
     showFeedback: showFeedback,
     dialogMode: dialogMode,
+    timeLimitMs: timeLimitMs || null,
     onFinish: (results, summary) => {
       console.log("課題の結果:", results);
       onFinish(results, summary);
@@ -79,18 +81,24 @@ function startBlock(blockNumber) {
   const conditionLabel = plan.condition === "low" ? "低" : "高";
   console.log(`ブロック${blockNumber}:セット${plan.set}・${conditionLabel}頻度`);
 
+  // 制限時間(本番のブロックだけ。開発者モードの &limit= があれば、その秒数)
+  const timeLimitMs = getBlockTimeLimitSec() * 1000;
+
   startTask(EMAILS[plan.set], true, false, plan.condition, (results, summary) => {
     const score = summarizeTask(results, summary);
     const prefix = "block" + blockNumber; // record の block1〜 / block2〜 に入れる
     record[prefix + "Set"] = plan.set;
     record[prefix + "Condition"] = conditionLabel;
-    record[prefix + "TimeMs"] = score.timeMs;
+    record[prefix + "TimeMs"] = summary.timedOut ? timeLimitMs : score.timeMs; // 時間切れなら制限時間
     record[prefix + "Correct"] = score.correct;
     record[prefix + "DialogDrawn"] = summary.draw.ids.size;
     record[prefix + "DialogTrap"] = summary.draw.trapCount;
     record[prefix + "DialogNormal"] = summary.draw.normalCount;
+    record[prefix + "TimedOut"] = summary.timedOut;
+    record[prefix + "Processed"] = results.length;
+    record[prefix + "DialogShown"] = summary.dialogShownCount;
     sendPhase(prefix, results, { phase: "本番", blockNumber: blockNumber, condition: conditionLabel, set: plan.set });
-  });
+  }, timeLimitMs);
 }
 
 // フェーズの終わりに、試行の行と、参加者の行(その時点までの内容)を送る
