@@ -12,7 +12,7 @@ const OPEN = false;
 const STUDY_PHASE = "pilot";
 
 // 課題の版(trials と participants の全行に、taskVersion という列で記録する。課題を作り直したら変える)
-const TASK_VERSION = "v7";
+const TASK_VERSION = "v8";
 
 // ===== 条件 =====
 
@@ -69,7 +69,7 @@ const DIALOG_LOCK_MS = 300;
 
 // 本番のブロック(ブロック1・2)の制限時間(秒)。練習と共通課題には制限時間はない
 // 最初のメールを表示した時点から数え、確認画面・メールのあいだの空白・タブを離れているあいだも進む
-const BLOCK_TIME_LIMIT_SEC = 100;
+const BLOCK_TIME_LIMIT_SEC = 70;
 
 // 時間切れのとき、「時間になりました」を表示しておく時間(ミリ秒)。このあと次の画面へ進む
 const TIME_UP_MESSAGE_MS = 1500;

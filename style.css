@@ -381,10 +381,13 @@ button {
   right: 0;
   bottom: 100%;
   margin-bottom: 8px;
+  display: flex;
+  gap: 16px;
   font-size: 15px;
   color: #444;
   white-space: nowrap;
 }
+/* 何通目か(残り時間の左隣)は、残り時間と同じ大きさ・同じ色(上の .task-timer の指定をそのまま使う) */
 
 /* メールの枠は高さを固定する(本文の長さでフォルダボタンの位置が動かないように) */
 .mail-card {

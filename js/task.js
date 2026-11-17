@@ -85,8 +85,8 @@ function buildTaskArea(container) {
     <div class="task">
       <div class="task-side">${buildRulesHtml()}</div>
       <div class="task-main">
-        <!-- 残り時間(本番のブロックだけ表示。ほかの部分の位置を動かさないよう、メールの枠の右上に重ねて出す) -->
-        <div class="task-timer"></div>
+        <!-- 何通目かと残り時間(本番のブロックだけ表示。ほかの部分の位置を動かさないよう、メールの枠の右上に重ねて出す) -->
+        <div class="task-timer"><span class="task-progress"></span><span class="task-remaining"></span></div>
         <div class="mail-card">
           <div class="mail-row"><span class="mail-label">差出人</span><span class="mail-sender"></span></div>
           <div class="mail-row"><span class="mail-label">件名</span><span class="mail-subject"></span></div>
@@ -137,7 +137,8 @@ function runTask(options) {
 
   // 制限時間(本番のブロックだけ。練習と共通課題は null で、制限なし)
   const timeLimitMs = options.timeLimitMs || null;
-  const timerBox = container.querySelector(".task-timer");
+  const timerBox = container.querySelector(".task-remaining");     // 残り時間
+  const progressBox = container.querySelector(".task-progress");   // 今何通目か
   let timerId = null;
 
   console.log("表示順:", order.map(mail => mail.id));
@@ -200,6 +201,10 @@ function runTask(options) {
     container.querySelector(".mail-body").textContent = mail.body;
     feedback.textContent = "";
     mailCard.style.visibility = "visible";
+    // 本番のブロックだけ:今何通目か(全部の通数は、このブロックのメールの数)
+    if (timeLimitMs) {
+      progressBox.textContent = TEXTS.task.progress.replace("{今}", index + 1).replace("{全部}", order.length);
+    }
 
     // この並び順が、trials シートの列の順番になる
     trial = {

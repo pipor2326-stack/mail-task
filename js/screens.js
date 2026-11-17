@@ -65,7 +65,8 @@ function getText(key) {
     return "";
   }
   // {制限時間} は、本番のブロックの制限時間(秒)に置き換える(開発者モードの &limit= も反映する)
-  return value.replace(/\{制限時間\}/g, getBlockTimeLimitSec());
+  // {通数} は、本番のセットの通数(SET_SIZES。A と B は同じ数で、開発者モードの点検で確かめている)に置き換える
+  return value.replace(/\{制限時間\}/g, getBlockTimeLimitSec()).replace(/\{通数\}/g, SET_SIZES.A.total);
 }
 
 // ===== 質問の画面(事前質問・主観評価・全体の質問) =====
