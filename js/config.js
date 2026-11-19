@@ -4,12 +4,12 @@
 // 参加の受け付けを始めているか
 //   false … 「現在準備中です」とだけ表示し、先へ進めない(?test=1 と ?dev=1 で開いたときは、ふだんどおり動く)
 //   true  … 参加者が参加できる(本番を始めるときに true にして push する)
-const OPEN = false;
+const OPEN = true;
 
 // いまが予備実験か本番か(trials と participants の全行に、studyPhase という列で記録する)
 //   "pilot" … 予備実験
 //   "main"  … 本番(本番を始めるときに "main" にして push する)
-const STUDY_PHASE = "pilot";
+const STUDY_PHASE = "main";
 
 // 課題の版(trials と participants の全行に、taskVersion という列で記録する。課題を作り直したら変える)
 const TASK_VERSION = "v8";
